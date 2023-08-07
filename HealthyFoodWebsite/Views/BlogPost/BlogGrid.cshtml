@@ -1,0 +1,101 @@
+﻿
+@model List<BlogPost>
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">Blog Grid</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Pages</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Blog Grid</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Blog Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-3">Our Blog</h1>
+            <p>Check our posts on the website</p>
+        </div>
+        <div class="row g-4">
+            @{
+                foreach (var post in Model)
+                {
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <img class="img-fluid" src="@post.PosterUri" alt="">
+                        <div class="bg-light p-4">
+                            <a class="d-block h5 lh-base mb-4" asp-controller="BlogPost" asp-action="GetBlogPost" asp-route-postId="@post.Id" >@post.Title</a>
+                            <div class="d-flex justify-content-between text-muted border-top pt-4">
+                                <small class="me-3"><i class="fa fa-user text-primary me-2"></i>@post.AuthorType</small>
+                                <small class="me-3"><i class="fa fa-calendar text-primary me-2"></i>@post.PublishingDate</small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<!-- Blog End -->
+<!-- Pagination Start -->
+<nav class="mb-5" aria-label="Blog Pages Navigation">
+    <ul class="pagination pagination-lg justify-content-center">
+
+        @{
+            var totalPagesCount = (int)ViewBag.PagesCount;
+            List<int> groupList = new(4);
+            List<List<int>> groupsList = new();
+
+            int currentIndex;
+            int.TryParse(Context.Request.QueryString.Value?.Split("=")[1], out currentIndex);
+            var previousIndex = currentIndex - 1;
+            var nextIndex = currentIndex + 1;
+
+
+            for(byte i = 1; i <= totalPagesCount; i++)
+            {
+                groupList.Add(i);
+
+                if (i % 4 == 0 || i == totalPagesCount)
+                {
+                    groupsList.Add(new List<int>(groupList));
+                    groupList.Clear();
+                }
+            }
+
+
+            List<int> shouldBeRenderedPages = new();
+            foreach (var group in groupsList)
+            {
+                if (group.Contains(currentIndex + 1))
+                {
+                    shouldBeRenderedPages = group;
+                    break;
+                }
+            }
+
+
+            <li class="page-item @(previousIndex == -1 ? "disabled" : "")"><a class="page-link" asp-route-pageIndex="@(previousIndex < 0 ? 0 : previousIndex)">Previous</a></li>
+
+            foreach(int pageNumber in shouldBeRenderedPages)
+            {
+                <li class="page-item @(currentIndex == (pageNumber - 1) ? "active" : "")"><a class="page-link" asp-route-pageIndex="@(pageNumber - 1)">@pageNumber</a></li>
+
+                if (!(totalPagesCount - pageNumber == 1) && pageNumber != totalPagesCount && pageNumber == shouldBeRenderedPages[3])
+                {
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                    <li class="page-item @(currentIndex == (totalPagesCount - 1) ? "active" : "")"><a class="page-link" asp-route-pageIndex="@(totalPagesCount - 1)">@(totalPagesCount)</a></li>
+                }
+            }
+
+            <li class="page-item @(nextIndex == totalPagesCount ? "disabled" : "")"><a class="page-link" asp-route-pageIndex="@(nextIndex > totalPagesCount ? totalPagesCount : nextIndex)">Next</a></li>
+        }
+
+    </ul>
+</nav>
+<!-- Pagination End -->

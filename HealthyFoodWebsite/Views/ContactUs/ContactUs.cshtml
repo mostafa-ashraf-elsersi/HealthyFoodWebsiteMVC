@@ -1,0 +1,84 @@
+﻿
+@model CustomerMessage
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">Contact Us</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Contact Us</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Contact Start -->
+<div class="container-xxl py-6">
+    <div class="container">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-3">Contact Us</h1>
+            <p>Don't hesitate to start a connection with us</p>
+        </div>
+        <div class="row g-5 justify-content-center">
+            <div class="col-lg-5 col-md-12 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="bg-primary text-white d-flex flex-column justify-content-center h-100 p-5">
+                    <h5 class="text-white">Call Us</h5>
+                    <p class="mb-5"><i class="fa fa-phone-alt me-3"></i>01550012835</p>
+                    <h5 class="text-white">Email Us</h5>
+                    <p class="mb-5"><i class="fa fa-envelope me-3"></i>mostafaashrafelsersi@gmail.com</p>
+                    <h5 class="text-white">Firm Address</h5>
+                    <p class="mb-5"><i class="fa fa-map-marker-alt me-3"></i>Tanta, Gharbyia, Egypt</p>
+                    <h5 class="text-white">Follow Me</h5>
+                    <div class="d-flex pt-2">
+                         <a class="btn btn-square btn-outline-light rounded-circle me-1" href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+                         <a class="btn btn-square btn-outline-light rounded-circle me-0" href="https://www.linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
+                <p class="mb-4"></p>
+                <form method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for=UserName class="form-control" placeholder="">
+                                <label asp-for=UserName>Your Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for=PhoneNumber class="form-control" placeholder="">
+                                <label asp-for=PhoneNumber>Phone Number</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input asp-for=Subject class="form-control" placeholder="">
+                                <label asp-for=Subject>Subject</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea asp-for=Message class="form-control" placeholder="" style="height: 200px"></textarea>
+                                <label asp-for=Message>Your Message</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary rounded-pill py-3 px-5" type="submit">Send Message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact End -->
+<!-- Google Map Start -->
+<div class="container-xxl px-0 wow fadeIn" data-wow-delay="0.1s" style="margin-bottom: -6px;">
+    <iframe class="w-100" style="height: 450px;"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d218753.53128313235!2d31.291212446715747!3d31.053433463809288!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14f7777bfe771703%3A0xd1aa28f76e87bc34!2sEl%20Mansoura%2C%20Dakahlia%20Governorate%2C%20Egypt!5e0!3m2!1sen!2sbd!4v1687292463196!5m2!1sen!2sbd"
+            frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+</div>
+<!-- Google Map End -->

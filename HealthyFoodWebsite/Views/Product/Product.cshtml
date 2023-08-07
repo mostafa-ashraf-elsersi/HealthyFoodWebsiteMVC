@@ -1,0 +1,220 @@
+﻿
+@model List<Product>
+
+@section Styles {
+    <style>
+        .deactivation-cover {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: rgba(193, 215, 215, 0.5);
+        }
+    </style>
+}
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">Products</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Products</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Product Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+
+        <div class="row g-0 gx-5 align-items-end">
+            <div class="col-lg-6">
+                <div class="section-header text-start mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                    <h1 class="display-5 mb-3">Our Products</h1>
+                    <p>Bunch of different products are available</p>
+                </div>
+            </div>
+            <div class="col-lg-6 text-start text-lg-end wow slideInRight" data-wow-delay="0.1s">
+                <ul class="nav nav-pills d-inline-flex justify-content-end mb-5">
+                    <li class="nav-item me-2">
+                        <button class="btn btn-outline-primary border-2 active" data-bs-toggle="pill" onclick="filterByCategoryAsync('All')">All</button>
+                    </li>
+                    <li class="nav-item me-2">
+                        <button class="btn btn-outline-primary border-2" data-bs-toggle="pill" onclick="filterByCategoryAsync('Fresh')">Fresh</button>
+                    </li>
+                    <li class="nav-item me-2">
+                        <button class="btn btn-outline-primary border-2" data-bs-toggle="pill" onclick="filterByCategoryAsync('Vegetables')">Vegetables</button>
+                    </li>
+                    <li class="nav-item me-0">
+                        <button class="btn btn-outline-primary border-2" data-bs-toggle="pill" onclick="filterByCategoryAsync('Fruits')">Fruits</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <!--Product Card-->
+            <div id="tab-1" class="tab-pane fade show p-0 active">
+                <div id="products-container" class="row g-4">
+
+                    @foreach(Product product in Model)
+                    {
+                        <div id="product-number-@product.Id" class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="product-item">
+                                <div class="position-relative bg-light overflow-hidden">
+                                    <div id="product-deactivation-cover-@product.Id" class="deactivation-cover @(product.IsDisplayed == true ? "invisible" : "")"></div>
+                                    <img class="img-fluid w-100" src="@product.ImageUri" alt="">
+                                    <div class="bg-secondary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3 @(DateTimeOffset.Now.LocalDateTime > product.UploadingDateAndTime.AddDays(1) ? "invisible": "")">New</div>
+                                </div>
+                                <div class="text-center p-4">
+                                    <p class="d-block h5 mb-2">@product.Name</p>
+                                    <span class="text-primary me-1">EGP @product.Price / Kg</span>
+                                </div>
+                                <div class="d-flex flex-column border-top">
+                                    <div class="form-check form-switch my-2 mx-2">
+                                        <input class="form-check-input" role="checkbox" id="deactivationSwitch" asp-for=@product.IsDisplayed onclick="deactivateAsync(@product.Id)">
+                                        <label class="form-check-label" for="deactivationSwitch">Show / Hide</label>
+                                    </div>
+                                    <a class="btn btn-primary mb-2 mx-2" asp-action="Update" asp-route-id=@product.Id>Update</a>
+                                    <!-- Button trigger modal -->
+                                    <button class="btn btn-danger mb-2 mx-2" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop-@product.Id">Delete</button>
+                                    <small class="w-50 text-center py-2">
+                                        <a class="text-body" asp-controller="ShoppingBag" asp-action="InsertUsingProduct" asp-route-productId="@product.Id"><i class="fa fa-shopping-bag text-primary me-2"></i>Add to bag</a>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop-@product.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Deletion!</h1>
+                                   </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this <strong>@product.Name</strong> product?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" onclick="deleteAsync(@product.Id)" data-bs-dismiss="modal">Yes, I meant it</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Product End -->
+@section Scripts {
+    <script>
+        async function deleteAsync(id) {
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Product/Delete/${id}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+                    if (result == true) {
+                        const deletedProduct = document.getElementById(`product-number-${id}`);
+                        deletedProduct.remove();
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+        }
+
+        async function deactivateAsync(id) {
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Product/Deactivate/${id}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+                    if (result == true) {
+                        const deactivatedProduct = document.getElementById(`product-deactivation-cover-${id}`);
+                        deactivatedProduct.classList.toggle("invisible");
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+        }
+
+        async function filterByCategoryAsync(category) {
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Product/FilterByCategory?category=${category}`,
+                type: "GET",
+                dataType: "JSON",
+                cache: false,
+                success: (result, status, xhr) => {
+                    console.log(result)
+                    const productsContainer = document.getElementById("products-container");
+                    productsContainer.innerHTML = "";
+
+                    let productHtmlCode = "";
+
+                    result.forEach(product => {
+
+                        let productUploadingDateAndTime = new Date(product.uploadingDateAndTime);
+                        productUploadingDateAndTime.setDate(productUploadingDateAndTime.getDate() + 1)
+
+                        productHtmlCode = `
+                                <div id="product-number-${product.id}" class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                                    <div class="product-item">
+                                        <div class="position-relative bg-light overflow-hidden">
+                                            <div id="product-deactivation-cover-${product.id}" class='deactivation-cover ${product.isDisplayed == true ? "invisible" : ""}'></div>
+                                            <img class="img-fluid w-100" src="${product.imageUri}" alt="">
+                                                            <div class='bg-secondary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3 ${new Date() > productUploadingDateAndTime ? "invisible" : ""}'>New</div>
+                                        </div>
+                                        <div class="text-center p-4">
+                                            <p class="d-block h5 mb-2">${product.name}</p>
+                                            <span class="text-primary me-1">EGP ${product.price} / Kg</span>
+                                        </div>
+                                        <div class="d-flex flex-column border-top">
+                                            <div class="form-check form-switch my-2 mx-2">
+                                                <input class="form-check-input" type="checkbox" role="checkbox" id="deactivationSwitch" ${product.isDisplayed == true ? "checked" : ""} onclick="deactivateAsync(${product.id})">
+                                                <label class="form-check-label" for="deactivationSwitch">Show / Hide</label>
+                                            </div>
+                                            <a class="btn btn-primary mb-2 mx-2" href="Update/${product.id}">Update</a>
+                                            <!-- Button trigger modal -->
+                                            <button class="btn btn-danger mb-2 mx-2" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop-${product.id}">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal -->
+                                    <div class="modal fade" id="staticBackdrop-${product.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Deletion!</h1>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this <strong>${product.name}</strong> product?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary" onclick="deleteAsync(${product.id})" data-bs-dismiss="modal">Yes, I meant it</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        `;
+
+                        productsContainer.insertAdjacentHTML("beforeend", productHtmlCode);
+
+                    });
+                },
+                error: (xhr, status, error) => { }
+            });
+        }
+    </script>
+}

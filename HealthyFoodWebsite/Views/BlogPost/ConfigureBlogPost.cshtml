@@ -1,0 +1,149 @@
+﻿
+@model BlogPost
+
+@section Styles {
+    <style>
+        #PosterFile {
+            opacity: 0;
+        }
+
+        #post-upload-label {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+        }
+
+        .poster-area {
+            border: 2px dashed rgb(77, 77, 77);
+            padding: 1rem;
+            position: relative;
+            width: 100%;
+        }
+
+            .poster-area::before {
+                content: 'Uploaded image result';
+                color: rgb(77, 77, 77);
+                font-weight: bold;
+                text-transform: uppercase;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 0.8rem;
+                z-index: 1;
+            }
+
+            .poster-area img {
+                z-index: 2;
+                position: relative;
+            }
+    </style>
+}
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">Blog Post Configuration</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Configure Blog Post</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Product Upload Start -->
+<div class="container-fluid bg-light bg-icon py-6 mb-0">
+    <div class="container">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
+            <div>
+                <h1 class="display-5">Configure A Post</h1>
+            </div>
+            <br />
+            <div class="text-center row">
+                <form asp-action="Insert" method="post" enctype="multipart/form-data">
+                    <div class="mx-auto mb-3">
+                        <!-- Uploaded image area-->
+                        <div class="text-start">
+                            <p class="fst-italic text-black-50">The image uploaded will be rendered inside the box below.</p>
+                            <div class="poster-area mt-4 mb-3 text-center"><img id="posterResult" src="#" alt="" class="img-fluid"></div>
+                        </div>
+
+                        <!-- Upload image input-->
+                        <div class="input-group px-2 py-2 bg-white border border-black">
+                            <input asp-for=PosterFile accept="image/*" onchange="readURL(this);" class="form-control">
+                            <label id="post-upload-label" asp-for=PosterFile>Poster</label>
+                            <div class="input-group-append">
+                                <label asp-for=PosterFile class="btn btn-outline-info m-0 rounded-pill px-4"> <i class="fa fa-upload me-2 text-muted"></i><small class="text-uppercase fw-bold text-muted">Upload Image</small></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for=Title class="form-control" placeholder="">
+                        <label asp-for=Title>Name</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <textarea asp-for=Content class="form-control" placeholder="" style="height: 200px"></textarea>
+                        <label asp-for=Content>Content</label>
+                    </div>
+                    <select asp-for=AuthorType class="form-select py-3 mb-3" aria-label="Select Author Role">
+                        <option selected>Choose Author Type...</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <div class="form-check form-switch text-start mb-3">
+                        <input asp-for=IsDisplayed class="form-check-input" role="checkbox" checked>
+                        <label asp-for=IsDisplayed class="form-check-label">Users See This (Initially)</label>
+                    </div>
+                    <div class="d-flex justify-content-around w-50 mx-auto">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="reset" class="btn btn-danger">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Product Upload End -->
+
+@section Scripts {
+    <script>
+        /*  ==========================================
+        SHOW UPLOADED IMAGE
+        * ========================================== */
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#posterResult')
+                        .attr('src', e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $(function () {
+            $('#PosterFile').on('change', function () {
+                readURL(input);
+            });
+        });
+
+        /*  ==========================================
+            SHOW UPLOADED IMAGE NAME
+        * ========================================== */
+        var input = document.getElementById('PosterFile');
+        var infoArea = document.getElementById('post-upload-label');
+
+        if (input != null) {
+            input.addEventListener('change', showFileName);
+            function showFileName(event) {
+                var input = event.srcElement;
+                var fileName = input.files[0].name;
+                infoArea.textContent = 'File name: ' + fileName;
+            }
+        }
+    </script>
+}
+
