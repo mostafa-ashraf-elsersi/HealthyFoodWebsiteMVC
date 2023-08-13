@@ -18,12 +18,12 @@ namespace HealthyFoodWebsite.Controllers
         // Object Methods Zone
         public async Task<IActionResult> GetActiveOrdersAsync()
         {
-            return View("Order", await orderRepository.GetActiveOrdersAsync());
+            return View("Order", await orderRepository.GetAdminViewActiveOrdersAsync());
         }
 
         public async Task<IActionResult> GetInactiveOrdersAsync()
         {
-            return View(await orderRepository.GetInactiveOrdersAsync());
+            return View(await orderRepository.GetAdminViewInactiveOrdersAsync());
         }
 
         public async Task<Order?> GetByIdAsync(int id)

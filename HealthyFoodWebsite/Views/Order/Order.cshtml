@@ -36,7 +36,7 @@
                                     <tbody>
                                         <tr>
                                             <td class="fw-bold">Customer Name</td>
-                                            <td>@order!.Logger?.FullName</td>
+                                            <td>@order.Logger?.FullName</td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Phone Number</td>
@@ -44,7 +44,7 @@
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Total Cost (EGP)</td>
-                                            <td>188.00</td>
+                                            <td>@order.TotalCost</td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">Date-Time</td>
@@ -100,17 +100,17 @@
                                     </thead>
                                     <tbody>
                                         @{
-                                            var shoppingBag = order.Logger?.ShoppingBag;
+                                            var shoppingBag = order.ShoppingBagItems;
 
                                             if (shoppingBag is not null)
                                             {
-                                                foreach (var shoppingItem in shoppingBag)
+                                                foreach (var shoppingBagItem in shoppingBag)
                                                 {
                                                     <tr>
-                                                        <td>@shoppingItem.Name</td>
-                                                        <td>@shoppingItem.UnitPrice</td>
-                                                        <td>@shoppingItem.Quantity</td>
-                                                        <td>@shoppingItem.SubTotalPrice</td>
+                                                        <td>@shoppingBagItem.Name</td>
+                                                        <td>@shoppingBagItem.UnitPrice</td>
+                                                        <td>@shoppingBagItem.Quantity</td>
+                                                        <td>@shoppingBagItem.SubTotalPrice</td>
                                                     </tr>
                                                 }
                                             }

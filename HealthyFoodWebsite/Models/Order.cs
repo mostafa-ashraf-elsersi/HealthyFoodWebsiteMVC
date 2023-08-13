@@ -26,5 +26,7 @@ namespace HealthyFoodWebsite.Models
 
         // Navigation Properties
         public Logger Logger { get; set; } = null!;
+
+        public ICollection<ShoppingBagItem> ShoppingBagItems { get; set; } = new List<ShoppingBagItem>();
     }
 }

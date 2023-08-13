@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthyFoodWebsite.Migrations
 {
     [DbContext(typeof(HealthyFoodDbContext))]
-    [Migration("20230807041924_Updating-Database-By-Adding-Image-Uploading-DateTime")]
-    partial class UpdatingDatabaseByAddingImageUploadingDateTime
+    [Migration("20230809085242_Constructing-Database")]
+    partial class ConstructingDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -251,8 +251,15 @@ namespace HealthyFoodWebsite.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("SubTotalPrice")
                         .HasColumnType("real");
@@ -263,6 +270,8 @@ namespace HealthyFoodWebsite.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LoggerId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("ShoppingBag");
                 });
@@ -309,12 +318,18 @@ namespace HealthyFoodWebsite.Migrations
             modelBuilder.Entity("HealthyFoodWebsite.Models.ShoppingBagItem", b =>
                 {
                     b.HasOne("HealthyFoodWebsite.Models.Logger", "Logger")
-                        .WithMany("ShoppingBag")
+                        .WithMany("ShoppingBags")
                         .HasForeignKey("LoggerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HealthyFoodWebsite.Models.Order", "Order")
+                        .WithMany("ShoppingBagItems")
+                        .HasForeignKey("OrderId");
+
                     b.Navigation("Logger");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("HealthyFoodWebsite.Models.Testimonial", b =>
@@ -332,9 +347,14 @@ namespace HealthyFoodWebsite.Migrations
                 {
                     b.Navigation("Orders");
 
-                    b.Navigation("ShoppingBag");
+                    b.Navigation("ShoppingBags");
 
                     b.Navigation("Testimonials");
+                });
+
+            modelBuilder.Entity("HealthyFoodWebsite.Models.Order", b =>
+                {
+                    b.Navigation("ShoppingBagItems");
                 });
 #pragma warning restore 612, 618
         }

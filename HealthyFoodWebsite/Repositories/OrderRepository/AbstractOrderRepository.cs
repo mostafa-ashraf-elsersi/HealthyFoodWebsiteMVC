@@ -8,7 +8,7 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
         public abstract Task<Order?> GetByIdAsync(int id);
 
-        public abstract Task<bool> InsertAsync(Order entity);
+        public Task<bool> InsertAsync(Order entity) => throw new NotImplementedException();
 
         public abstract Task<bool> UpdateAsync(Order entity);
 
@@ -16,10 +16,12 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
 
         // Child Object Methods Zone
-        public abstract Task<List<Order>> GetActiveOrdersAsync();
+        public abstract Task<List<Order>> GetAdminViewActiveOrdersAsync();
 
-        public abstract Task<List<Order>> GetInactiveOrdersAsync();
+        public abstract Task<List<Order>> GetAdminViewInactiveOrdersAsync();
 
-        public abstract Task<int?> GetLastInsertedOrderId();
+        public abstract Task<List<Order>> GetUserViewConfirmedOrdersAsync();
+
+        public abstract Task<int> InsertThenReturnIdAsync(Order entity);
     }
 }

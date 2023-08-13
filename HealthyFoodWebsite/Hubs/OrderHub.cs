@@ -4,24 +4,22 @@ using HealthyFoodWebsite.Hubs.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using HealthyFoodWebsite.Repositories.ShoppingBag;
 
 namespace HealthyFoodWebsite.Hubs
 {
     public class OrderHub : Hub<IOrderClient>
     {
-        public async Task PersistOrderInDatabaseThenRedirect(string orderDetails, [FromServices] AbstractOrderRepository orderRepository)
+
+        public async Task PersistOrderInDatabaseThenReturnId(string orderDetails, [FromServices] AbstractOrderRepository orderRepository)
         {
             try
             {
                 var order = JsonConvert.DeserializeObject<Order>(orderDetails);
 
-                await orderRepository.InsertAsync(order!);
+                var orderId = await orderRepository.InsertThenReturnIdAsync(order!);
 
-                var lastInsertedOrderId = await orderRepository.GetLastInsertedOrderId();
-
-                var _order = await orderRepository.GetByIdAsync((int)lastInsertedOrderId);
-
-                await RedirectOrderFromCustomerToSeller(_order);
+                await Clients.Caller.SendOrderIdAsync(orderId);
             }
             catch
             {
@@ -30,30 +28,44 @@ namespace HealthyFoodWebsite.Hubs
           
         }
 
-        public async Task RedirectOrderFromCustomerToSeller(Order? order)
+        public async Task RedirectOrderFromCustomerToSeller(int orderId, [FromServices] AbstractOrderRepository orderRepository)
         {
-            List<ShoppingBagItemDto> shoppingBagItems = new();
-
-            order!.Logger?.ShoppingBag.ToList().ForEach(item =>
+            try
             {
-                shoppingBagItems.Add(new ShoppingBagItemDto(
-                    item.Name,
-                    item.UnitPrice,
-                    item.Quantity,
-                    item.SubTotalPrice));
-            });
+                List<ShoppingBagItemDto> shoppingBagItems = new();
 
-            var currentOrder = new OrderDto(
-                order.Id,
-                order.Logger?.FullName,
-                order.Logger?.PhoneNumber,
-                order.InitiatingDateAndTime,
-                order.Status,
-                order.StartedPreparing,
-                order.StartedDelivering,
-                shoppingBagItems);
+                var order = await orderRepository.GetByIdAsync(orderId);
 
-            await Clients.Others.SendOrderAsync(currentOrder);
+                var items = order!.ShoppingBagItems.ToList();
+
+                items.ForEach(item =>
+                {
+                    shoppingBagItems.Add(new ShoppingBagItemDto(
+                        item.Name,
+                        item.UnitPrice,
+                        item.Quantity,
+                        item.SubTotalPrice));
+                });
+
+                var currentOrder = new OrderDto(
+                    order.Id,
+                    order.Logger?.FullName,
+                    order.Logger?.PhoneNumber,
+                    order.InitiatingDateAndTime,
+                    order.Status,
+                    order.TotalCost,
+                    order.StartedPreparing,
+                    order.StartedDelivering,
+                    shoppingBagItems);
+
+                await Clients.Others.SendOrderAsync(currentOrder);
+                await Clients.Caller.SendOrderToUserAsync(currentOrder);
+            }
+            catch
+            {
+                return;
+            }
+          
         }
     }
 }

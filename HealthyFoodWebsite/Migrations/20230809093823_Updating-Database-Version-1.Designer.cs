@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthyFoodWebsite.Migrations
 {
     [DbContext(typeof(HealthyFoodDbContext))]
-    [Migration("20230805201353_Constructing-Database")]
-    partial class ConstructingDatabase
+    [Migration("20230809093823_Updating-Database-Version-1")]
+    partial class UpdatingDatabaseVersion1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace HealthyFoodWebsite.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Author")
+                    b.Property<string>("AuthorType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -48,8 +48,9 @@ namespace HealthyFoodWebsite.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PublishingDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("PublishingDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -221,6 +222,9 @@ namespace HealthyFoodWebsite.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
+                    b.Property<DateTimeOffset>("UploadingDateAndTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
@@ -237,9 +241,6 @@ namespace HealthyFoodWebsite.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<int>("LoggerId")
                         .HasColumnType("int");
 
@@ -247,8 +248,15 @@ namespace HealthyFoodWebsite.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("SubTotalPrice")
                         .HasColumnType("real");
@@ -259,6 +267,8 @@ namespace HealthyFoodWebsite.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LoggerId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("ShoppingBag");
                 });
@@ -305,12 +315,18 @@ namespace HealthyFoodWebsite.Migrations
             modelBuilder.Entity("HealthyFoodWebsite.Models.ShoppingBagItem", b =>
                 {
                     b.HasOne("HealthyFoodWebsite.Models.Logger", "Logger")
-                        .WithMany("ShoppingBag")
+                        .WithMany("ShoppingBags")
                         .HasForeignKey("LoggerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HealthyFoodWebsite.Models.Order", "Order")
+                        .WithMany("ShoppingBagItems")
+                        .HasForeignKey("OrderId");
+
                     b.Navigation("Logger");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("HealthyFoodWebsite.Models.Testimonial", b =>
@@ -328,9 +344,14 @@ namespace HealthyFoodWebsite.Migrations
                 {
                     b.Navigation("Orders");
 
-                    b.Navigation("ShoppingBag");
+                    b.Navigation("ShoppingBags");
 
                     b.Navigation("Testimonials");
+                });
+
+            modelBuilder.Entity("HealthyFoodWebsite.Models.Order", b =>
+                {
+                    b.Navigation("ShoppingBagItems");
                 });
 #pragma warning restore 612, 618
         }

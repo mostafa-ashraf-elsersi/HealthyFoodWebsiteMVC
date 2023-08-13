@@ -23,7 +23,7 @@ namespace HealthyFoodWebsite.Repositories.ShoppingBag
 
 
         // Object Methods Zone
-        public override async Task<List<ShoppingBagItem>> GetUserShoppingBagItemsAsync()
+        public override async Task<List<ShoppingBagItem>> GetUserActiveShoppingBagItemsAsync()
         {
             await semaphoreSlim.WaitAsync(-1);
 

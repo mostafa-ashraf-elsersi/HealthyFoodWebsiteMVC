@@ -16,7 +16,7 @@ namespace HealthyFoodWebsite.Repositories.ShoppingBag
 
 
         // Child Object Methods Zone
-        public abstract Task<List<ShoppingBagItem>> GetUserShoppingBagItemsAsync();
+        public abstract Task<List<ShoppingBagItem>> GetUserActiveShoppingBagItemsAsync();
 
         public abstract Task<bool> InsertUsingProductAsync(int productId);
 

@@ -1,4 +1,5 @@
 ﻿using HealthyFoodWebsite.Models;
+using HealthyFoodWebsite.Repositories.OrderRepository;
 using HealthyFoodWebsite.Repositories.ShoppingBag;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,22 +9,21 @@ namespace HealthyFoodWebsite.Controllers
     {
         // Object Fields Zone
         private readonly AbstractShoppingBagRepository shoppingBagRepository;
+        private readonly AbstractOrderRepository orderRepository;
 
 
         // Dependency Injection Zone
-        public ShoppingBagController(AbstractShoppingBagRepository shoppingBagRepository) =>
+        public ShoppingBagController(AbstractShoppingBagRepository shoppingBagRepository, AbstractOrderRepository orderRepository)
+        {
             this.shoppingBagRepository = shoppingBagRepository;
-
+            this.orderRepository = orderRepository;
+        }
 
         // Object Methods Zone
         public async Task<IActionResult> GetUserShoppingBagItemsAsync()
         {
-            return View("ShoppingBag", await shoppingBagRepository.GetUserShoppingBagItemsAsync());
-        }
-
-        public async Task<ShoppingBagItem?> GetByIdAsync(int id)
-        {
-            return await shoppingBagRepository.GetByIdAsync(id);
+            ViewBag.UserConfirmedOrders = await orderRepository.GetUserViewConfirmedOrdersAsync();
+            return View("ShoppingBag", await shoppingBagRepository.GetUserActiveShoppingBagItemsAsync());
         }
 
         public async Task<bool> InsertUsingProductAsync(int productId)
@@ -37,9 +37,10 @@ namespace HealthyFoodWebsite.Controllers
             return await shoppingBagRepository.UpdateUsingJsonObjectsArrayAsync(itemsArray);
         }
 
-        public async Task<bool> DeleteAsync(ShoppingBagItem entity)
+        public async Task<bool> DeleteAsync(int id)
         {
-            return await shoppingBagRepository.DeleteAsync(entity);
+            var entity = await shoppingBagRepository.GetByIdAsync(id);
+            return await shoppingBagRepository.DeleteAsync(entity!);
         }
     }
 }

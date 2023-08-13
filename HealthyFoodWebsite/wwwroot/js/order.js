@@ -24,6 +24,7 @@ connection.on("SendOrderAsync", function (currentOrder) {
 
     const currentOrderNumber = document.getElementsByClassName("ordersCount").length + 1;
 
+    var orderDateAndTime = currentOrder.initiatingDateAndTime.split('T');
 
     cardBody.innerHTML = `
         <h5 class="card-title">Order <span class="text-muted ordersCount">#${currentOrderNumber}</span></h5>
@@ -44,7 +45,7 @@ connection.on("SendOrderAsync", function (currentOrder) {
                 </tr>
                 <tr>
                     <td class="fw-bold">Date-Time</td>
-                    <td>${currentOrder.initiatingDateAndTime}</td>
+                    <td>${orderDateAndTime[0]} ${orderDateAndTime[1]}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Order Status</td>

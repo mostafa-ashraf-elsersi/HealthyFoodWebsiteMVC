@@ -29,10 +29,10 @@ namespace HealthyFoodWebsite.Models
 
 
         // Navigation Properties
-        public ICollection<ShoppingBagItem> ShoppingBag { get; set; } = new List<ShoppingBagItem>();
+        public ICollection<ShoppingBagItem>? ShoppingBags { get; set; } = new List<ShoppingBagItem>();
 
-        public ICollection<Testimonial> Testimonials { get; set; } = new List<Testimonial>();
+        public ICollection<Testimonial>? Testimonials { get; set; } = new List<Testimonial>();
 
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Order>? Orders { get; set; } = new List<Order>();
     }
 }

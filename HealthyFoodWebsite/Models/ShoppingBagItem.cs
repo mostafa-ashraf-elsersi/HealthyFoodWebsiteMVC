@@ -19,13 +19,16 @@ namespace HealthyFoodWebsite.Models
 
         public string Status { get; set; } = "Active";
 
+        [ForeignKey("Order")]
+        public int? OrderId { get; set; }
+
         [ForeignKey("Logger")]
         public int LoggerId { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
-
 
         // Navigation Properties
+        public Order? Order { get; set; }
+
         public Logger Logger { get; set; } = null!;
     }
 }

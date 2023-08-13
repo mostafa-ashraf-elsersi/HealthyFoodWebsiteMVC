@@ -16,15 +16,15 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
 
         // Object Methods Zone
-        public override async Task<List<Order>> GetActiveOrdersAsync()
+        public override async Task<List<Order>> GetAdminViewActiveOrdersAsync()
         {
             await semaphoreSlim.WaitAsync(-1);
 
             var activeOrders = await dbContext
                .Order
                .Where(order => order.Status == "Active")
+               .Include(order => order.ShoppingBagItems)
                .Include(order => order.Logger)
-               .ThenInclude(logger => logger!.ShoppingBag)
                .OrderBy(order => order.InitiatingDateAndTime)
                .AsNoTracking()
                .ToListAsync();
@@ -34,7 +34,7 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
             return activeOrders;
         }
 
-        public override async Task<List<Order>> GetInactiveOrdersAsync()
+        public override async Task<List<Order>> GetAdminViewInactiveOrdersAsync()
         {
             await semaphoreSlim.WaitAsync(-1);
 
@@ -42,7 +42,7 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
                .Order
                .Where(order => order.Status != "Active")
                .Include(order => order.Logger)
-               .ThenInclude(logger => logger!.ShoppingBag)
+               .ThenInclude(logger => logger!.ShoppingBags)
                .OrderBy(order => order.InitiatingDateAndTime)
                .AsNoTracking()
                .ToListAsync();
@@ -52,19 +52,21 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
             return inactiveOrders;
         }
 
-        public override async Task<int?> GetLastInsertedOrderId()
+        public override async Task<List<Order>> GetUserViewConfirmedOrdersAsync()
         {
             await semaphoreSlim.WaitAsync(-1);
 
-            var lastInsertedOrder = await dbContext
-                .Order
-                .OrderBy(order => order.Id)
-                .AsNoTracking()
-                .LastOrDefaultAsync();
+            var confirmedOrders = await dbContext
+              .Order
+              .Where(order => order.LoggerId == 1) // TODO: Get the correct logger Id here.
+              .Include(order => order.ShoppingBagItems
+                .Where(item => item.Status == "Confirmed"))
+              .AsNoTracking()
+              .ToListAsync();
 
             semaphoreSlim.Release();
 
-            return lastInsertedOrder?.Id;
+            return confirmedOrders;
         }
 
         public override async Task<Order?> GetByIdAsync(int id)
@@ -74,8 +76,8 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
             var order = await dbContext
                .Order
                .Where(order => order.Status == "Active" && order.Id == id)
+               .Include(order => order.ShoppingBagItems)
                .Include(order => order.Logger)
-               .ThenInclude(logger => logger!.ShoppingBag)
                .FirstOrDefaultAsync();
 
             semaphoreSlim.Release();
@@ -83,7 +85,7 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
             return order;
         }
 
-        public override async Task<bool> InsertAsync(Order entity)
+        public override async Task<int> InsertThenReturnIdAsync(Order entity)
         {
             try
             {
@@ -94,11 +96,11 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
                 semaphoreSlim.Release();
 
-                return true;
+                return entity.Id;
             }
             catch
             {
-                return false;
+                return entity.Id;
             }
         }
 

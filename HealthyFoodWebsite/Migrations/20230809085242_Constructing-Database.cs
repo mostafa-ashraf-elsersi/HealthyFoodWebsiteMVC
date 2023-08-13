@@ -20,8 +20,8 @@ namespace HealthyFoodWebsite.Migrations
                     PosterUri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Author = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PublishingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AuthorType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PublishingDate = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDisplayed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -89,6 +89,7 @@ namespace HealthyFoodWebsite.Migrations
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Price = table.Column<float>(type: "real", nullable: false),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UploadingDateAndTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     IsDisplayed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -122,30 +123,6 @@ namespace HealthyFoodWebsite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ShoppingBag",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnitPrice = table.Column<float>(type: "real", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    SubTotalPrice = table.Column<float>(type: "real", nullable: false),
-                    LoggerId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShoppingBag", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ShoppingBag_Logger_LoggerId",
-                        column: x => x.LoggerId,
-                        principalTable: "Logger",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Testimonial",
                 columns: table => new
                 {
@@ -165,6 +142,37 @@ namespace HealthyFoodWebsite.Migrations
                         principalTable: "Logger",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShoppingBag",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UnitPrice = table.Column<float>(type: "real", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    SubTotalPrice = table.Column<float>(type: "real", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: true),
+                    LoggerId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingBag", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingBag_Logger_LoggerId",
+                        column: x => x.LoggerId,
+                        principalTable: "Logger",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_ShoppingBag_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -196,6 +204,11 @@ namespace HealthyFoodWebsite.Migrations
                 column: "LoggerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShoppingBag_OrderId",
+                table: "ShoppingBag",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Testimonial_LoggerId",
                 table: "Testimonial",
                 column: "LoggerId");
@@ -214,9 +227,6 @@ namespace HealthyFoodWebsite.Migrations
                 name: "CustomerMessage");
 
             migrationBuilder.DropTable(
-                name: "Order");
-
-            migrationBuilder.DropTable(
                 name: "Product");
 
             migrationBuilder.DropTable(
@@ -224,6 +234,9 @@ namespace HealthyFoodWebsite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Testimonial");
+
+            migrationBuilder.DropTable(
+                name: "Order");
 
             migrationBuilder.DropTable(
                 name: "Logger");
