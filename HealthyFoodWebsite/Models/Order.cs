@@ -21,7 +21,9 @@ namespace HealthyFoodWebsite.Models
         [ForeignKey("Logger")]
         public int LoggerId { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+        public bool UserIsDeleted { get; set; } = false;
+
+        public bool AdminIsDeleted { get; set; } = false;
 
 
         // Navigation Properties

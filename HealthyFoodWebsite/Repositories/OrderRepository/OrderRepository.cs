@@ -22,7 +22,7 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
             var activeOrders = await dbContext
                .Order
-               .Where(order => order.Status == "Active")
+               .Where(order => order.Status == "Active" && order.AdminIsDeleted == false && order.UserIsDeleted == false)
                .Include(order => order.ShoppingBagItems)
                .Include(order => order.Logger)
                .OrderBy(order => order.InitiatingDateAndTime)
@@ -40,9 +40,9 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
             var inactiveOrders = await dbContext
                .Order
-               .Where(order => order.Status != "Active")
+               .Where(order => order.Status != "Active" && order.AdminIsDeleted == false && order.UserIsDeleted == false)
+               .Include(order => order.ShoppingBagItems)
                .Include(order => order.Logger)
-               .ThenInclude(logger => logger!.ShoppingBags)
                .OrderBy(order => order.InitiatingDateAndTime)
                .AsNoTracking()
                .ToListAsync();
@@ -58,7 +58,7 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
             var confirmedOrders = await dbContext
               .Order
-              .Where(order => order.LoggerId == 1) // TODO: Get the correct logger Id here.
+              .Where(order => order.LoggerId == 1 && order.UserIsDeleted == false) // TODO: Get the correct logger Id here.
               .Include(order => order.ShoppingBagItems
                 .Where(item => item.Status == "Confirmed"))
               .AsNoTracking()
@@ -69,13 +69,30 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
             return confirmedOrders;
         }
 
+        public override async Task<List<Order>> GetUserViewConfirmedActiveOrdersAsync()
+        {
+            await semaphoreSlim.WaitAsync(-1);
+
+            var activeOrders = await dbContext
+              .Order
+              .Where(order => order.LoggerId == 1 && order.Status == "Active" && order.UserIsDeleted == false) // TODO: Get the correct logger Id here.
+              .Include(order => order.ShoppingBagItems
+                .Where(item => item.Status == "Confirmed"))
+              .AsNoTracking()
+              .ToListAsync();
+
+            semaphoreSlim.Release();
+
+            return activeOrders;
+        }
+
         public override async Task<Order?> GetByIdAsync(int id)
         {
             await semaphoreSlim.WaitAsync(-1);
 
             var order = await dbContext
                .Order
-               .Where(order => order.Status == "Active" && order.Id == id)
+               .Where(order => order.Id == id)
                .Include(order => order.ShoppingBagItems)
                .Include(order => order.Logger)
                .FirstOrDefaultAsync();
@@ -123,13 +140,68 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
             }
         }
 
-        public override async Task<bool> DeleteAsync(Order entity)
+        public override async Task<bool> ChangePreparingOrDeliveringToTrue(Order entity, string mode)
         {
             try
             {
+                if (mode == "Preparing")
+                    entity.StartedPreparing = true;
+                else if (mode == "Delivering")
+                    entity.StartedDelivering = true;
+
                 await semaphoreSlim.WaitAsync(-1);
 
-                dbContext.Order.Remove(entity);
+                await dbContext.SaveChangesAsync();
+
+                semaphoreSlim.Release();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override async Task<bool> SealOrderAsDoneOrCancelled(Order entity, string status)
+        {
+            try
+            {
+                if (status == "Done")
+                    entity.Status = "Done";
+                else if (status == "Cancelled")
+                    entity.Status = "Cancelled";
+
+                await semaphoreSlim.WaitAsync(-1);
+
+                await dbContext.SaveChangesAsync();
+
+                semaphoreSlim.Release();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override async Task<bool> PerformUserOrAdminViewDeletionAsync(Order entity, string view)
+        {
+            try
+            {
+                if (view == "AdminView")
+                    entity.AdminIsDeleted = true;
+                else if (view == "UserView")
+                {
+                    if (entity.Status == "Active")
+                        entity.Status = "CancelledFromUser";
+                    entity.UserIsDeleted = true;
+                }
+                    
+
+                await semaphoreSlim.WaitAsync(-1);
+
                 await dbContext.SaveChangesAsync();
 
                 semaphoreSlim.Release();

@@ -7,8 +7,6 @@ namespace HealthyFoodWebsite.Controllers.IController
         // All Methods Signatures Below, Are Optional
         Task<IActionResult> GetAllAsync() => throw new NotImplementedException();
 
-        Task<T?> GetByIdAsync(int id) => throw new NotImplementedException();
-
         Task<bool> InsertAsync(T entity) => throw new NotImplementedException();
 
         Task<bool> UpdateAsync(T entity) => throw new NotImplementedException();

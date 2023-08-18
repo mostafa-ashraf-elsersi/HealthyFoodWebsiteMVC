@@ -25,6 +25,7 @@ async function deleteItemAsync(id) {
         cache: false,
         success: (result, status, xhr) => {
             if (result == true) {
+
                 const item = document.getElementById(`item-number-${id}`);
                 item.remove();
 
@@ -39,13 +40,13 @@ async function deleteItemAsync(id) {
                         let totalPrice = 0;
 
                         Array.from(items).forEach(item => {
-                            const quantity = Number(item.children[4].children[0].value);
-                            const unitPrice = Number(item.children[5].textContent);
-                            totalPrice += (quantity * unitPrice);
+                            const unitPrice = Number(item.children[3].textContent);
+                            const quantity = Number(item.children[4].firstElementChild.value);
+                            totalPrice += (unitPrice * quantity);
                         });
 
                         const totalPriceElement = document.getElementById("total-price");
-                        totalPriceElement.textContent = totalPrice;
+                        totalPriceElement.textContent = `EGP ${totalPrice}`;
                     }
                     else {
                         cleanShoppingBagAfterDeletingAllItems();
@@ -128,6 +129,32 @@ async function relateShoppingBagItemsWithCurrentOrder(currentOrderId) {
         error: (xhr, status, error) => { }
     });
 }
+
+function appendNewConstructedOrderInActiveOrdersGridToBeTracked(currentOrderId) {
+
+    const newTrackedOrderNumber = document.getElementsByClassName('tracked-active-orders').length + 1;
+
+    document.getElementById('tracked-orders-container').insertAdjacentHTML("beforeend",
+        `
+            <div id="tracked-user-active-order-${currentOrderId}" class="tracked-active-orders d-flex justify-content-center align-items-center shadow bg-body-tertiary py-3 mb-4">
+
+                <span>#${newTrackedOrderNumber} |</span>
+                                
+                <span class="fw-bold ms-2 me-3">Order-ID <span>${currentOrderId}</span></span>
+
+                <div class="progress d-inline me-1" style="width: 40%; height: 25px;" role="progressbar" aria-label="Animated striped progress bar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated fw-bold" style="width: 0%; height: 25px;"></div>
+                </div>
+
+                <div class="progress d-inline ms-2 me-1" style="width: 40%; height: 25px;" role="progressbar" aria-label="Animated striped progress bar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info fw-bold" style="width: 0%; height: 25px;"></div>
+                </div>
+
+            </div>
+        `
+    );
+}
+
 function redirectCurrentOrderFromCustomerToSellerThenCleanBag(currentOrderId) {
 
     // Redirecting The Current Order From Customer To The Seller (Using SignalR).
@@ -146,6 +173,8 @@ connection.on("SendOrderIdAsync", async (currentOrderId) => {
 
     await relateShoppingBagItemsWithCurrentOrder(currentOrderId);
 
+    appendNewConstructedOrderInActiveOrdersGridToBeTracked(currentOrderId);
+
     await redirectCurrentOrderFromCustomerToSellerThenCleanBag(currentOrderId);
 
 });
@@ -157,6 +186,7 @@ connection.on("SendOrderToUserAsync", (currentOrder) => {
     const userCardsContainer = document.getElementById("userCardsContainer");
 
     const cardWrapper = document.createElement("div");
+    cardWrapper.id = `user-confirmed-order-${currentOrder.orderId}`;
     cardWrapper.classList.add(["card"]);
     cardWrapper.classList.add(["text-start"]);
     cardWrapper.classList.add(["mb-3"]);
@@ -175,6 +205,10 @@ connection.on("SendOrderToUserAsync", (currentOrder) => {
 
     <table class="table table-hover align-middle">
         <tbody>
+            <tr>
+                <td class="fw-bold">Order ID</td>
+                <td>${currentOrder.orderId}</td>
+            </tr>
             <tr>
                 <td class="fw-bold">Total Cost (EGP)</td>
                 <td>${currentOrder.totalCost}</td>
@@ -205,6 +239,11 @@ connection.on("SendOrderToUserAsync", (currentOrder) => {
         </thead>
         <tbody id="productsTableBody-${currentOrder.orderId}"></tbody>
     </table>
+
+    <div class="d-flex flex-column justify-content-center">
+        <!-- Deletion button trigger modal -->
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmedOrderDeletionModal-${currentOrder.orderId}">Delete</button>
+    </div>
 `
 
     cardWrapper.appendChild(cardBody);
@@ -237,8 +276,32 @@ connection.on("SendOrderToUserAsync", (currentOrder) => {
         productsTableBody.appendChild(tr);
     });
 
-});
+    const myTabContent = document.getElementById('myTabContent');
 
+    myTabContent.insertAdjacentHTML('beforeend',
+        `
+            <!-- Deletion modal -->
+            <div class="modal fade" id="confirmedOrderDeletionModal-${currentOrder.orderId}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deletionStaticBackdrop" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Deletion Confirmation!</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this confirmed order?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="performUserViewDeletionAsync(${currentOrder.orderId})">Understood</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    );
+
+});
 
 
 async function constructThenRelateThenRedirect(event)
@@ -261,4 +324,96 @@ async function constructThenRelateThenRedirect(event)
         });
 
     event.preventDefault();
+}
+
+
+
+// The section of order inactive status and mode
+
+connection.on("SendOrderIdWithItsInactiveStatusToUserAsync", (id, orderStatus) => {
+
+    const targetTrackedActiveOrder = document.getElementById(`tracked-user-active-order-${id}`);
+    targetTrackedActiveOrder.remove();
+
+    const targetOrderCard = document.getElementById(`user-confirmed-order-${id}`);
+
+    targetOrderCard.firstElementChild.children[1].firstElementChild.children[3].lastElementChild.textContent = `${orderStatus}`;
+
+});
+
+connection.on("SendOrderIdWithItsModeToUserAsync", (id, mode) => {
+
+    const targetTrackedActiveOrderChildren = document.getElementById(`tracked-user-active-order-${id}`).children;
+
+    const preparingProgressBar = targetTrackedActiveOrderChildren[2].firstElementChild;
+
+    const deliveringProgressBar = targetTrackedActiveOrderChildren[3].firstElementChild;
+
+    if (mode == "Preparing") {
+        preparingProgressBar.style.width = "50%";
+        preparingProgressBar.textContent = `Now Preparing...`;
+    }
+    else if (mode == "Delivering") {
+        preparingProgressBar.style.width = "100%";
+        preparingProgressBar.textContent = `Order Prepared!`;
+
+        deliveringProgressBar.style.width = "50%";
+        deliveringProgressBar.textContent = `Now Delivering...`;
+    }
+});
+
+
+
+// The section of writing "StartedPreparing" and "StartedDelivering" properties values from database to the shopping bag active orders grid
+
+$(document).ready(() => {
+
+    const trackedActiveOrders = document.getElementsByClassName('tracked-active-orders');
+
+    Array.from(trackedActiveOrders).forEach(order => {
+
+        const preparingValue = order.lastElementChild.firstElementChild.textContent;
+        const deliveringValue = order.lastElementChild.lastElementChild.textContent;
+
+        const preparingProgressBar = order.children[2].firstElementChild;
+        const deliveringProgressBar = order.children[3].firstElementChild;
+
+        if (preparingValue == "True" && deliveringValue == "False") {
+            preparingProgressBar.textContent = "Now Preparing..."
+            preparingProgressBar.style.width = "50%";
+        }
+        else if (deliveringValue == "True") {
+            preparingProgressBar.textContent = "Order Prepared!"
+            preparingProgressBar.style.width = "100%";
+
+            deliveringProgressBar.textContent = "Now Delivering..."
+            deliveringProgressBar.style.width = "50%";
+        }
+    });
+});
+
+
+
+// Deleting an order from an admin view perspective
+async function performUserViewDeletionAsync(orderId) {
+    $.support.cors = true;
+    await $.ajax({
+        url: `/Order/PerformUserOrAdminViewDeletion/${orderId}?view=UserView`,
+        type: "GET",
+        cache: false,
+        success: (result, status, xhr) => {
+            if (result == true) {
+
+                connection.invoke("RedirectSpecificOrderIdFromUserToSeller", orderId)
+                .catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+                const targetConfirmedOrderCard = document.getElementById(`user-confirmed-order-${orderId}`);
+
+                targetConfirmedOrderCard.remove();
+            }
+        },
+        error: (xhr, status, error) => { }
+    });
 }

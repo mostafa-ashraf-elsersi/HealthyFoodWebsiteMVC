@@ -12,7 +12,7 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
         public abstract Task<bool> UpdateAsync(Order entity);
 
-        public abstract Task<bool> DeleteAsync(Order entity);
+        public Task<bool> DeleteAsync(Order entity) => throw new NotImplementedException();
 
 
         // Child Object Methods Zone
@@ -22,6 +22,14 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
         public abstract Task<List<Order>> GetUserViewConfirmedOrdersAsync();
 
+        public abstract Task<List<Order>> GetUserViewConfirmedActiveOrdersAsync();
+
         public abstract Task<int> InsertThenReturnIdAsync(Order entity);
+
+        public abstract Task<bool> ChangePreparingOrDeliveringToTrue(Order entity, string mode);
+
+        public abstract Task<bool> SealOrderAsDoneOrCancelled(Order entity, string status);
+
+        public abstract Task<bool> PerformUserOrAdminViewDeletionAsync(Order entity, string view);
     }
 }

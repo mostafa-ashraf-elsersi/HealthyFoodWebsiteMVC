@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using HealthyFoodWebsite.Repositories.ShoppingBag;
+using System.Security.Claims;
 
 namespace HealthyFoodWebsite.Hubs
 {
@@ -67,5 +68,44 @@ namespace HealthyFoodWebsite.Hubs
             }
           
         }
+
+        public async Task RedirectOrderIdWithItsMode(int id, string mode)
+        {
+            try
+            {
+                // TODO: Correct practice here is to make this section using ClaimTypes.NameIdentifier
+                await Clients.Others.SendOrderIdWithItsModeToUserAsync(id, mode); // NOTICE: This is logically wrong.
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        public async Task RedirectOrderIdWithItsInactiveStatus(int id, string orderStatus)
+        {
+            try
+            {
+                // TODO: Correct practice here is to make this section using ClaimTypes.NameIdentifier
+                await Clients.Others.SendOrderIdWithItsInactiveStatusToUserAsync(id, orderStatus); // NOTICE: This is logically wrong.
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        public async Task RedirectSpecificOrderIdFromUserToSeller(int orderId)
+        {
+            try
+            {
+                await Clients.Others.SendSpecificOrderIdAsync(orderId);
+            }
+            catch
+            {
+                return;
+            }
+        }
+
     }
 }

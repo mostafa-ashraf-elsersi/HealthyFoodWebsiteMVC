@@ -20,9 +20,10 @@ namespace HealthyFoodWebsite.Controllers
         }
 
         // Object Methods Zone
-        public async Task<IActionResult> GetUserShoppingBagItemsAsync()
+        public async Task<IActionResult> GetUserActiveShoppingBagItemsAsync()
         {
             ViewBag.UserConfirmedOrders = await orderRepository.GetUserViewConfirmedOrdersAsync();
+            ViewBag.UserConfirmedActiveOrders = await orderRepository.GetUserViewConfirmedActiveOrdersAsync();
             return View("ShoppingBag", await shoppingBagRepository.GetUserActiveShoppingBagItemsAsync());
         }
 

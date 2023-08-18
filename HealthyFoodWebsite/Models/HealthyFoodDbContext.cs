@@ -38,6 +38,11 @@ namespace HealthyFoodWebsite.Models
                 options.HasIndex(e => e.Title).IsUnique();
             });
 
+            modelBuilder.Entity<Order>(options =>
+            {
+                options.HasQueryFilter(e => e.UserIsDeleted == false);
+            });
+
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -16,19 +16,10 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
-        public async Task<IActionResult> GetActiveOrdersAsync()
+        public async Task<IActionResult> GetUserOrdersAsync()
         {
+            ViewBag.UsersInactiveOrders = await orderRepository.GetAdminViewInactiveOrdersAsync();
             return View("Order", await orderRepository.GetAdminViewActiveOrdersAsync());
-        }
-
-        public async Task<IActionResult> GetInactiveOrdersAsync()
-        {
-            return View(await orderRepository.GetAdminViewInactiveOrdersAsync());
-        }
-
-        public async Task<Order?> GetByIdAsync(int id)
-        {
-            return await orderRepository.GetByIdAsync(id);
         }
 
         public async Task<bool> UpdateAsync(Order entity)
@@ -36,9 +27,22 @@ namespace HealthyFoodWebsite.Controllers
             return await orderRepository.UpdateAsync(entity);
         }
 
-        public async Task<bool> DeleteAsync(Order entity)
+        public async Task<bool> ChangePreparingOrDeliveringToTrue(int id, string mode)
         {
-            return await orderRepository.DeleteAsync(entity);
+            var entity = await orderRepository.GetByIdAsync(id);
+            return await orderRepository.ChangePreparingOrDeliveringToTrue(entity!, mode);
+        }
+
+        public async Task<bool> SealOrderAsDoneOrCancelled(int id, string status)
+        {
+            var entity = await orderRepository.GetByIdAsync(id);
+            return await orderRepository.SealOrderAsDoneOrCancelled(entity!, status);
+        }
+
+        public async Task<bool> PerformUserOrAdminViewDeletionAsync(int id, string view)
+        {
+            var entity = await orderRepository.GetByIdAsync(id);
+            return await orderRepository.PerformUserOrAdminViewDeletionAsync(entity!, view);
         }
     }
 }
