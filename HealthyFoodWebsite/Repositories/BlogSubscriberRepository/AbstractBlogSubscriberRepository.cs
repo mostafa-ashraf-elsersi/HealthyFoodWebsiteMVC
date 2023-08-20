@@ -13,6 +13,14 @@ namespace HealthyFoodWebsite.Repositories.BlogSubscriberRepository
 
         public Task<bool> UpdateAsync(BlogSubscriber entity) => throw new NotImplementedException();
 
-        public abstract Task<bool> DeleteAsync(BlogSubscriber entity);
+        public Task<bool> DeleteAsync(BlogSubscriber entity) => throw new NotImplementedException();
+
+
+        // Child Object Methods Zone
+        public abstract Task<bool> SearchForSubscriptionsOfUsername(string username);
+
+        public abstract Task<List<BlogSubscriber>> GetUserSubscriptionsAsync(string username);
+
+        public abstract Task<bool> DeleteSubscriptionsAsync(List<BlogSubscriber> entities);
     }
 }

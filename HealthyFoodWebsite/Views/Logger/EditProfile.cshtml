@@ -1,5 +1,125 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model Logger
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">Edit Profile</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Edit Profile</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Login Form Start -->
+<div class="container-fluid bg-light bg-icon py-5 mb-0">
+
+    <div class="container">
+        <div class="section-header text-center mx-auto my-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
+            <div>
+                <h1 id="page-main-element-1" class="display-5">Update @ViewBag.AccountTypeWord Profile</h1>
+            </div>
+            <br />
+            <form method="post">
+                <div class="form-floating mb-4">
+                    <input asp-for=FullName class="form-control" placeholder="">
+                    <label asp-for=FullName>Full Name</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input asp-for=Username class="form-control" placeholder="">
+                    <label asp-for=Username>Username</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input asp-for=Email class="form-control" placeholder="">
+                    <label asp-for=Email>Email</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input asp-for=Password class="form-control" placeholder="">
+                    <label asp-for=Password>Password</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input asp-for=ConfirmingPassword class="form-control" placeholder="">
+                    <label asp-for=ConfirmingPassword>Confirm Password</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input asp-for=PhoneNumber class="form-control" placeholder="">
+                    <label asp-for=PhoneNumber>Phone Number</label>
+                </div>
+                <div class="mb-4">
+                    <select class="form-select" style="height: 60px;" id="role" aria-label="Choose Role" asp-for=Role>
+                        <option selected>Choose a role...</option>
+                        <option value="BusinessOwner">Business Owner</option>
+                        <option value="Admin">Admin</option>
+                        <option value="User">User</option>
+                    </select>
+                </div>
+                <div class="d-flex justify-content-evenly">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+            @if (ViewBag.HasBlogSubscriptions == true)
+            {
+                <div id="subscriptions-cancellation-button" class="d-flex flex-column my-5 pt-4 border-top">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-danger py-2" data-bs-toggle="modal" data-bs-target="#cancelSubscriptionsStaticBackdrop">Cancel Blog Posts Subscription</button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="cancelSubscriptionsStaticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="blogPostsSubscriptionsCancellationModal" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Cancellation Confirmation!</h1>
+                            </div>
+                            <div class="modal-body text-start">
+                                Are you sure you want to cancel all your blog posts subscriptions?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="cancelSubscriptionsAsync()" data-bs-dismiss="modal">Yes, I meant it</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subscriptions-cancellation-alert" class="alert alert-dismissible alert-success mt-5 d-none">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>Cancellation Done!</strong> You successfully cancelled all your blog posts subscriptions.
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+<!-- Login Form End -->
+
+@section Scripts {
+    <script>
+
+        async function cancelSubscriptionsAsync(){
+            $.support.cors = true;
+            await $.ajax({
+                url: `/BLogSubscriber/DeleteSubscriptions`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+
+                    if (result == true) {
+
+                        const subscriptionsCancellationButton = document.getElementById('subscriptions-cancellation-button');
+                        const subscriptionsCancellationAlert = document.getElementById('subscriptions-cancellation-alert');
+
+                        subscriptionsCancellationButton.classList.add("d-none");
+                        subscriptionsCancellationAlert.classList.remove("d-none");
+
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+        }
+
+    </script>
 }

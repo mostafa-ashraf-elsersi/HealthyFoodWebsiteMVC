@@ -20,7 +20,11 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
         {
             await semaphoreSlim.WaitAsync(-1);
 
-            var admins = await dbContext.Logger.AsNoTracking().ToListAsync();
+            var admins = await dbContext
+                .Logger
+                .Where(logger => logger.Role == "Admin")
+                .AsNoTracking()
+                .ToListAsync();
 
             semaphoreSlim.Release();
 
@@ -77,6 +81,9 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
         {
             try
             {
+                if (entity.Role == "BusinessOwner" && entity.IsActive == false)
+                    entity.IsActive = true;
+
                 await semaphoreSlim.WaitAsync(-1);
 
                 dbContext.Logger.Update(entity);
@@ -96,7 +103,14 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
         {
             try
             {
-                entity.IsActive = false;
+                if (entity.IsActive == true)
+                    entity.IsActive = false;
+
+                else if (entity.IsActive == false)
+                    entity.IsActive = true;
+
+                else
+                    throw new Exception();
 
                 await semaphoreSlim.WaitAsync(-1);
 
@@ -116,9 +130,10 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
         {
             try
             {
+                entity.IsDeleted = true;
+
                 await semaphoreSlim.WaitAsync(-1);
 
-                dbContext.Logger.Remove(entity);
                 await dbContext.SaveChangesAsync();
 
                 semaphoreSlim.Release();

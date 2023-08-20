@@ -141,9 +141,7 @@
             <h1 class="display-5 mb-3">Customer Review</h1>
             <p>Check the customers reviews</p>
         </div>
-        <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.1s">
-            <partial name="_TestimonialsListPartial" model="ViewBag.TestimonialsList">
-        </div>
+        <partial name="_TestimonialsListPartial" model="ViewBag.TestimonialsList">
     </div>
 </div>
 <!-- Testimonial End -->
@@ -177,8 +175,7 @@
 </div>
 <!-- Blog End -->
 
-                    <script>
-    console.log("DDDDDDD");
+<script>
     document.addEventListener("DOMContentLoaded", () => {
         const ratingStarsContainers = document.getElementsByClassName("rating-stars-containers");
         if (ratingStarsContainers != null) {

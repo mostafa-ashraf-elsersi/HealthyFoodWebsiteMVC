@@ -44,9 +44,9 @@
             <div class="d-flex justify-content-evenly flex-wrap">
 
                 @{
-                    foreach(var testimonial in Model.Testimonials)
+                    foreach(var testimonial in Model.Testimonials!)
                     {
-                        <div class="testimonial-item position-relative bg-white p-5 border border-black mt-4 mb-4" style="width: 35%">
+                        <div id="testimonial-number-@testimonial.Id" class="position-relative bg-white p-5 border border-black mt-4 mb-2" style="width: 35%">
                             <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
                             <p class="mb-1">@testimonial.Content</p>
                             <span class="rating-stars-containers">
@@ -63,6 +63,28 @@
                                 </svg>
                                 <div class="ms-3 text-start">
                                     <h5 class="mb-1">@Model.FullName</h5>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column pt-2 mt-4 border-top">
+                                <!-- Button trigger modal -->
+                                <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#testimonialStaticBackdrop-@testimonial.Id">Delete</button>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="testimonialStaticBackdrop-@testimonial.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="testimonialDeletionModal" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Deletion!</h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this testimonial?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" onclick="deleteTestimonialAsync(@testimonial.Id)" data-bs-dismiss="modal">Yes, I meant it</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -90,6 +112,22 @@
                 });
             })
         })
+
+        async function deleteTestimonialAsync(id){
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Testimonial/Delete/${id}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+                    if (result == true) {
+                        const deletedtestimonial = document.getElementById(`testimonial-number-${id}`);
+                        deletedtestimonial.remove();
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+        }
     </script>
 }
 

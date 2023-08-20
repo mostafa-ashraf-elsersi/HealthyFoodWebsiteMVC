@@ -12,10 +12,10 @@ namespace HealthyFoodWebsite.Models
 
         public byte RatingValue { get; set; }
 
+        public bool SeenByAdmin { get; set; } = false;
+
         [ForeignKey("Logger")]
         public int LoggerId { get; set; }
-
-        public bool IsDeleted { get; set; } = false;
 
 
         // Navigation Properties

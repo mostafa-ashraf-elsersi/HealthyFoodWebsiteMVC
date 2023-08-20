@@ -17,10 +17,6 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
-        public async Task<BlogSubscriber?> GetByIdAsync(int id)
-        {
-            return await blogSubscriberRepository.GetByIdAsync(id);
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -29,9 +25,10 @@ namespace HealthyFoodWebsite.Controllers
             return await blogSubscriberRepository.InsertAsync(entity);
         }
 
-        public async Task<bool> DeleteAsync(BlogSubscriber entity)
+        public async Task<bool> DeleteSubscriptionsAsync()
         {
-            return await blogSubscriberRepository.DeleteAsync(entity);
+            var subscriptions = await blogSubscriberRepository.GetUserSubscriptionsAsync("mostafa_ashraf"); // TODO: Get the correct username.
+            return await blogSubscriberRepository.DeleteSubscriptionsAsync(subscriptions);
         }
     }
 }

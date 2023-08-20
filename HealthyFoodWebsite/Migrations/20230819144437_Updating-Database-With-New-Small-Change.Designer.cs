@@ -4,6 +4,7 @@ using HealthyFoodWebsite.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthyFoodWebsite.Migrations
 {
     [DbContext(typeof(HealthyFoodDbContext))]
-    partial class HealthyFoodDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230819144437_Updating-Database-With-New-Small-Change")]
+    partial class UpdatingDatabaseWithNewSmallChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,9 +293,6 @@ namespace HealthyFoodWebsite.Migrations
 
                     b.Property<byte>("RatingValue")
                         .HasColumnType("tinyint");
-
-                    b.Property<bool>("SeenByAdmin")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

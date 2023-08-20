@@ -1,0 +1,170 @@
+﻿@model List<Logger>
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">System Admins</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">System Admins</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Feature Start -->
+<div class="container-fluid bg-light bg-icon py-5 mb-0">
+    
+    <div class="container">
+        <div class="section-header text-center mx-auto my-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
+            <div>
+                <h1 id="page-main-element-1" class="display-5 @(Model.Count == 0 ? "d-none" : "")">System Admins</h1>
+                <h1 id="page-main-element-2" class="display-5 @(Model.Count == 0 ? "" : "d-none")">No Registered Admins Yet!</h1>
+            </div>
+            <br />
+            <div class="row">
+                <table id="page-main-element-3" class="table table-hover align-middle @(Model.Count == 0 ? "d-none" : "")">
+                    <thead>
+                        <tr>
+                            <th scope="col">Serial Number</th>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Username</th>
+                            <th colspan="2">Password</th>
+                            <th scope="col">Phone Number</th>
+                            <th scope="col">Role</th>
+                            <th colspan="3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int counter = 0;
+
+                            foreach (Logger logger in Model)
+                            {
+                                <tr id="admin-account-number-@logger.Id">
+                                    <td>@(++counter)</td>
+                                    <td>@logger.FullName</td>
+                                    <td>@logger.Email</td>
+                                    <td>@logger.Username</td>
+                                    <td><input id="password-control" type="password" class="form-control" style="width: 100px;" value="@logger.Password" readonly /></td>
+                                    <td><button class="btn btn-primary" onclick="togglePasswordVisibility(this)"><i class="fa fa-eye-slash"></i></button></td>
+                                    <td>@logger.PhoneNumber</td>
+                                    <td>@logger.Role</td>
+                                    <td><button class="btn btn-secondary" onclick="deactivateAdminAccount(@logger.Id, this)"><i class="fa @(logger.IsActive == true ? "fa-user-check" : "fa-user-lock")"></i></button></td>
+                                    <td><a class="btn btn-primary" asp-controller="Logger" asp-action="Update" asp-route-id="@logger.Id">Update</a></td>
+                                    <!-- Button trigger modal -->
+                                    <td><button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#loggerAccountStaticBackdrop-@logger.Id">Delete</button></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    @foreach (Logger logger in Model)
+        {
+            <!-- Modal -->
+            <div class="modal fade" id="loggerAccountStaticBackdrop-@logger.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="loggerAccountDeletionModal" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Deletion Confirmation!</h1>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete the account of <strong>@logger.FullName</strong>?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="deleteAccountAsync(@logger.Id)" data-bs-dismiss="modal">Yes, I meant it</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+</div>
+<!-- Feature End -->
+
+@section Scripts {
+    <script>
+        
+        function togglePasswordVisibility(thisElement){
+
+            const passwordControl = document.getElementById('password-control');
+
+            if (passwordControl.type === "password"){
+                passwordControl.type = "text";
+                thisElement.innerHTML = `<i class="fa fa-eye"></i>`
+            }
+            else if (passwordControl.type === "text"){
+                passwordControl.type = "password";
+                thisElement.innerHTML = `<i class="fa fa-eye-slash"></i>`
+            }
+           
+        }
+
+        async function deactivateAdminAccount(id, thisElement){
+
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Logger/Deactivate/${id}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+
+                    if (result == true) {
+
+                        const deactivationButtonTargetClass = thisElement.firstElementChild.classList[1];
+                        const deactivationButtonClassList = thisElement.firstElementChild.classList;
+
+                        if (deactivationButtonTargetClass === "fa-user-check") {
+                            deactivationButtonClassList.remove(["fa-user-check"]);
+                            deactivationButtonClassList.add(["fa-user-lock"]);
+                        }
+                        else if (deactivationButtonTargetClass === "fa-user-lock") {
+                            deactivationButtonClassList.remove(["fa-user-lock"]);
+                            deactivationButtonClassList.add(["fa-user-check"]);
+                        }
+                       
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+
+        }
+
+        async function deleteAccountAsync(id){
+
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Logger/Delete/${id}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+
+                    if (result == true) {
+
+                        const adminAccount = document.getElementById(`admin-account-number-${id}`);
+                        adminAccount.remove();
+
+                        const pageFirstMainELement = document.getElementById("page-main-element-1");
+                        const pageSecondMainELement = document.getElementById("page-main-element-2");
+                        const pageThirdMainELement = document.getElementById("page-main-element-3");
+
+                        pageFirstMainELement.classList.add(["d-none"]);
+                        pageSecondMainELement.classList.remove(["d-none"]);
+                        pageThirdMainELement.classList.add(["d-none"]);
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+
+        }
+
+    </script>
+}

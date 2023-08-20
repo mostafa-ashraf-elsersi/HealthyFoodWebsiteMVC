@@ -71,6 +71,7 @@
                         <a asp-controller="Order" asp-action="GetUserOrders" class="nav-item nav-link">Customers Orders</a>
                         <a asp-controller="Product" asp-action="Insert" class="nav-item nav-link">Add Product</a>
                         <a asp-controller="Product" asp-action="GetAll" class="nav-item nav-link">Products</a>
+                        <a asp-controller="Testimonial" asp-action="GetAll" class="nav-item nav-link">Testimonials</a>
                         <a asp-controller="ContactUs" asp-action="GetAll" class="nav-item nav-link">Messages</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
@@ -94,7 +95,8 @@
                                 <li><a class="dropdown-item" asp-controller="Logger" asp-action="Login">Log in</a></li>
                                 <li><a class="dropdown-item" asp-controller="Logger" asp-action="Register">Register</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+                                <li><a class="dropdown-item" asp-controller="Logger" asp-action="GetAllAdmins">System Admins</a></li>
+                                <li><a class="dropdown-item" asp-controller="Logger" asp-action="Update" asp-route-id="1">Edit Profile</a></li>
                             </ul>
                         </div>
                         <!-- Shopping Bag Link-->
@@ -135,7 +137,7 @@
                         <a class="btn btn-link" asp-controller="AboutUs" asp-action="GetAboutUsView">About Us</a>
                         <a class="btn btn-link" asp-controller="ContactUs" asp-action="GetContactUsView">Contact Us</a>
                         <a class="btn btn-link" href="">Privacy Policy</a>
-                        <a class="btn btn-link" href="">Terms & Conditions</a>
+                        <a class="btn btn-link" href="">Terms And Conditions</a>
                         <a class="btn btn-link" href="">FAQs</a>
                     </div>
                     <div class="col-lg-3 col-md-6">

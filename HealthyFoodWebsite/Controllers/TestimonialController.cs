@@ -1,5 +1,4 @@
 ﻿using HealthyFoodWebsite.Models;
-using HealthyFoodWebsite.Repositories.BlogRepository;
 using HealthyFoodWebsite.Repositories.TestimonialRepository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,18 +16,9 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
-
-        public IActionResult GetView()
-        {
-            return View("AddTestimonial");
-        }
-
-#pragma warning disable CS1998
         public async Task<IActionResult> GetAllAsync()
-#pragma warning restore CS1998
         {
-            throw new Exception("Action Seems To Be Not Needed!");
-            //return View(await testimonialRepository.GetAllAsync());
+            return View("UsersTestimonials", await testimonialRepository.GetAllAsync());
         }
 
         public async Task<IActionResult> GetUserTestimonialsAsync()
@@ -37,9 +27,11 @@ namespace HealthyFoodWebsite.Controllers
 
         }
 
-        public async Task<Testimonial?> GetByIdAsync(int id)
+
+        // Insertion Entrance
+        public IActionResult GetView()
         {
-            return await testimonialRepository.GetByIdAsync(id);
+            return View("AddTestimonial");
         }
 
         [HttpPost]
@@ -49,9 +41,17 @@ namespace HealthyFoodWebsite.Controllers
             return await testimonialRepository.InsertAsync(entity);
         }
 
-        public async Task<bool> DeleteAsync(Testimonial entity)
+
+        public async Task<bool> ToggleSeenOrUnseenAsync(int id)
         {
-            return await testimonialRepository.DeleteAsync(entity);
+            var entity = await testimonialRepository.GetByIdAsync(id);
+            return await testimonialRepository.ToggleSeenOrUnseenAsync(entity!);
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await testimonialRepository.GetByIdAsync(id);
+            return await testimonialRepository.DeleteAsync(entity!);
         }
     }
 }

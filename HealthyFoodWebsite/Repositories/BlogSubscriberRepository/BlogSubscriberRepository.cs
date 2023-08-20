@@ -1,5 +1,6 @@
 ﻿using HealthyFoodWebsite.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HealthyFoodWebsite.Repositories.BlogSubscriberRepository
 {
@@ -25,6 +26,43 @@ namespace HealthyFoodWebsite.Repositories.BlogSubscriberRepository
             semaphoreSlim.Release();
 
             return subscribers;
+        }
+
+        public override async Task<bool> SearchForSubscriptionsOfUsername(string username)
+        {
+            try
+            {
+                await semaphoreSlim.WaitAsync(-1);
+
+                var subscriptions = await dbContext
+                    .BlogSubscriber
+                    .Where(subscriber => subscriber.UserName == username)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                semaphoreSlim.Release();
+
+                return !subscriptions.IsNullOrEmpty();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override async Task<List<BlogSubscriber>> GetUserSubscriptionsAsync(string username)
+        {
+            await semaphoreSlim.WaitAsync(-1);
+
+            var subscriptions = await dbContext
+                .BlogSubscriber
+                .Where(subscriber => subscriber.UserName == username)
+                .AsNoTracking()
+                .ToListAsync();
+
+            semaphoreSlim.Release();
+
+            return subscriptions;
         }
 
         public override async Task<BlogSubscriber?> GetByIdAsync(int id)
@@ -58,13 +96,13 @@ namespace HealthyFoodWebsite.Repositories.BlogSubscriberRepository
 
         }
 
-        public override async Task<bool> DeleteAsync(BlogSubscriber entity)
+        public override async Task<bool> DeleteSubscriptionsAsync(List<BlogSubscriber> entities)
         {
             try
             {
                 await semaphoreSlim.WaitAsync(-1);
 
-                dbContext.BlogSubscriber.Remove(entity);
+                dbContext.BlogSubscriber.RemoveRange(entities);
                 await dbContext.SaveChangesAsync();
 
                 semaphoreSlim.Release();

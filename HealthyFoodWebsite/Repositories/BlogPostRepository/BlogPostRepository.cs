@@ -41,17 +41,24 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
         // Object Methods Zone
         public override async Task<(List<BlogPost>, int)> GetPagesWithCountAsync(int pageIndex)
         {
-            await semaphoreSlim.WaitAsync(-1);
+           try
+            {
+                await semaphoreSlim.WaitAsync(-1);
 
-            var posts = await dbContext.Blog.AsNoTracking().ToListAsync();
+                var posts = await dbContext.Blog.AsNoTracking().ToListAsync();
 
-            semaphoreSlim.Release();
+                semaphoreSlim.Release();
 
-            var pagesList = posts.GetPages(6).ToList();
+                var pagesList = posts.GetPages(6).ToList();
 
-            var pagesCount = pagesList.Count;
+                var pagesCount = pagesList.Count;
 
-            return (pagesList[pageIndex], pagesCount);
+                return (pagesList[pageIndex], pagesCount);
+            }
+            catch
+            {
+                return (new List<BlogPost>(),  0);
+            }
         }
 
         public override async Task<List<BlogPost>> GetLastThreePostsAsync()
@@ -83,8 +90,8 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
             try
             {
 
-                string? imageUri = await imageUploader.UploadImageToServerAsync(entity.PosterFile, "\\img\\blogPosts\\");
-                entity.PosterUri = imageUri;
+                string? posterUri = await imageUploader.UploadImageToServerAsync(entity.PosterFile, "\\img\\blogPosts\\");
+                entity.PosterUri = posterUri;
 
                 await semaphoreSlim.WaitAsync(-1);
 
@@ -119,8 +126,9 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
                     }
                     catch
                     {
-                        
+
                     }
+
                 }));
 
                 mailThread.Start(gatheringObject);
@@ -138,6 +146,15 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
         {
             try
             {
+                if (entity.PosterFile is not null)
+                {
+                    if (!imageUploader.DeleteImageFromServerAsync(entity.PosterUri))
+                        throw new Exception("An error occurred in the deletion function of the image uploader service.");
+
+                    var posterUri = await imageUploader.UploadImageToServerAsync(entity.PosterFile, "\\img\\blogPosts\\");
+                    entity.PosterUri = posterUri;
+                }
+
                 await semaphoreSlim.WaitAsync(-1);
 
                 dbContext.Blog.Update(entity);
@@ -157,7 +174,14 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
         {
             try
             {
-                entity.IsDisplayed = false;
+                if (entity.IsDisplayed == true)
+                    entity.IsDisplayed = false;
+
+                else if (entity.IsDisplayed == false)
+                    entity.IsDisplayed = true;
+                
+                else
+                    throw new Exception();
 
                 await semaphoreSlim.WaitAsync(-1);
 

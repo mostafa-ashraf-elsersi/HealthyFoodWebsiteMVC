@@ -1,0 +1,181 @@
+﻿@model List<Testimonial>
+
+@section Styles {
+    <style>
+        .cls-3 {
+            fill: #6fabe6
+        }
+
+        .cls-4 {
+            fill: #82bcf4
+        }
+
+        .checked {
+            color: yellow;
+        }
+
+        .fontSize25 {
+            font-size: 25px;
+        }
+
+        .seen-cover {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: rgba(193, 215, 215, 0.5);
+        }
+    </style>
+}
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
+    <div class="container">
+        <h1 class="display-3 mb-3 animated slideInDown">Users Testimonials</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Users Testimonials</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+<!-- Testimonial Start -->
+<div class="container-fluid bg-light bg-icon py-6 mb-0">
+    <div class="container">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
+            <div>
+                <h1 class="display-5">Users Testimonials</h1>
+            </div>
+            <br />
+            <div id="user-testimonials-container" class="d-flex justify-content-evenly flex-wrap">
+
+                @{
+                    foreach (var testimonial in Model)
+                    {
+                        <div id="user-testimonial-number-@testimonial.Id" class="position-relative bg-white p-5 border border-black mt-4 mb-2" style="width: 35%">
+                            <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
+
+                            <div class="position-relative overflow-hidden">
+                                <div id="testimonial-seen-cover-@testimonial.Id" class="seen-cover @(testimonial.SeenByAdmin == false ? "invisible" : "")"></div>
+                                <p class="mb-1">@testimonial.Content</p>
+                                <span class="rating-stars-containers">
+                                    <span hidden>@testimonial.RatingValue</span>
+                                    <span class="fa fa-star fontSize25 invisible"></span>
+                                    <span class="fa fa-star fontSize25 invisible"></span>
+                                    <span class="fa fa-star fontSize25 invisible"></span>
+                                    <span class="fa fa-star fontSize25 invisible"></span>
+                                    <span class="fa fa-star fontSize25 invisible"></span>
+                                </span>
+                                <div class="d-flex align-items-center mt-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="width: 50px;">
+                                        <g id="User_profile" data-name="User profile"><path d="M47 24A23 23 0 1 1 12.81 3.91 23 23 0 0 1 47 24z" style="fill:#374f68" /><path d="M47 24a22.91 22.91 0 0 1-8.81 18.09A22.88 22.88 0 0 1 27 45C5.28 45-4.37 17.34 12.81 3.91A23 23 0 0 1 47 24z" style="fill:#425b72" /><path class="cls-3" d="M39.2 35.39a19 19 0 0 1-30.4 0 17 17 0 0 1 10.49-8.73 8.93 8.93 0 0 0 9.42 0 17 17 0 0 1 10.49 8.73z" /><path class="cls-4" d="M39.2 35.39a19 19 0 0 1-4.77 4.49 19 19 0 0 1-15.13-1 7.08 7.08 0 0 1-.51-12.18c.1-.07 0-.05.5-.05a9 9 0 0 0 9.42 0 17 17 0 0 1 10.49 8.74z" /><path class="cls-3" d="M33 19a9 9 0 1 1-12.38-8.34A9 9 0 0 1 33 19z" /><path class="cls-4" d="M33 19a9 9 0 0 1-2.6 6.33c-9.13 3.74-16.59-7.86-9.78-14.67A9 9 0 0 1 33 19z" /></g>
+                                    </svg>
+                                    <div class="ms-3 text-start">
+                                        <h5 class="mb-1">@testimonial.Logger.FullName</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column pt-2 mt-4 border-top">
+                                <div class="text-start form-check form-switch my-2">
+                                    <input class="form-check-input" role="checkbox" id="seenSwitch" asp-for=@testimonial.SeenByAdmin onclick='toggleTestimonialSeenOrUnseenAsync(@testimonial.Id)'>
+                                    <span id="seen-by-admin-value-span-@testimonial.Id" hidden>@testimonial.SeenByAdmin</span>
+                                    <label class="form-check-label" for="seenSwitch">Seen / Unseen</label>
+                                </div>
+                                <!-- Button trigger modal -->
+                                <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#testimonialStaticBackdrop-@testimonial.Id">Delete</button>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="testimonialStaticBackdrop-@testimonial.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="testimonialDeletionModal" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Deletion Confirmation!</h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this testimonial?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" onclick="deleteTestimonialAsync(@testimonial.Id)" data-bs-dismiss="modal">Yes, I meant it</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Testimonial End -->
+@section Scripts {
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const ratingStarsContainers = document.getElementsByClassName("rating-stars-containers");
+            Array.from(ratingStarsContainers).forEach(container => {
+                const containerRatingValue = Number(container.children[0].textContent);
+                for (let i = 1; i <= containerRatingValue; i++) {
+                    container.children[i].classList.add(["checked"]);
+                }
+                Array.from(container.children).forEach(span => {
+                    span.classList.remove(["invisible"]);
+                });
+            })
+        })
+
+        async function deleteTestimonialAsync(id) {
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Testimonial/Delete/${id}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+                    if (result == true) {
+                        const deletedtestimonial = document.getElementById(`user-testimonial-number-${id}`);
+                        deletedtestimonial.remove();
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+        }
+
+        async function toggleTestimonialSeenOrUnseenAsync(id){
+            $.support.cors = true;
+            await $.ajax({
+                url: `/Testimonial/ToggleSeenOrUnseen/${id}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+                    if (result == true) {
+                        const userTestimonialsContainer = document.getElementById("user-testimonials-container");
+                        const userTestimonial = document.getElementById(`user-testimonial-number-${id}`);
+                        const seenByAdminValueElement = document.getElementById(`seen-by-admin-value-span-${id}`);
+                        const switchValue = seenByAdminValueElement.textContent;
+                        userTestimonial.remove();
+
+                        if (switchValue == "True"){
+                            userTestimonialsContainer.insertAdjacentElement("afterbegin", userTestimonial);
+                            seenByAdminValueElement.textContent = "False";
+                        }
+                        else if (switchValue == "False") {
+                            userTestimonialsContainer.insertAdjacentElement("beforeend", userTestimonial);
+                            seenByAdminValueElement.textContent = "True";
+                        }
+
+                        const testimonialSeenCover = document.getElementById(`testimonial-seen-cover-${id}`);
+                        testimonialSeenCover.classList.toggle("invisible");
+                    }
+                },
+                error: (xhr, status, error) => { }
+            });
+        }
+
+    </script>
+}
+
+

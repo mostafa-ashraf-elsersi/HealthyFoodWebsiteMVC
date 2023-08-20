@@ -113,6 +113,7 @@
     </div>
 </div>
 <!-- Product End -->
+
 @section Scripts {
     <script>
         async function deleteAsync(id) {
@@ -139,8 +140,8 @@
                 cache: false,
                 success: (result, status, xhr) => {
                     if (result == true) {
-                        const deactivatedProduct = document.getElementById(`product-deactivation-cover-${id}`);
-                        deactivatedProduct.classList.toggle("invisible");
+                        const productDeactivationCover = document.getElementById(`product-deactivation-cover-${id}`);
+                        productDeactivationCover.classList.toggle("invisible");
                     }
                 },
                 error: (xhr, status, error) => { }

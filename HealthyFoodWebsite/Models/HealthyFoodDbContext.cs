@@ -22,6 +22,9 @@ namespace HealthyFoodWebsite.Models
         // Inherited DbContext Methods
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            // TODO: Check global query filters for database entities.
+
             modelBuilder.Entity<Product>(options =>
             {
                 options.HasIndex(e => e.Name).IsUnique();
@@ -31,6 +34,7 @@ namespace HealthyFoodWebsite.Models
             modelBuilder.Entity<Logger>(options =>
             {
                 options.HasIndex(e => e.Username).IsUnique();
+                options.HasQueryFilter(e => e.IsDeleted == false);
             });
 
             modelBuilder.Entity<BlogPost>(options =>

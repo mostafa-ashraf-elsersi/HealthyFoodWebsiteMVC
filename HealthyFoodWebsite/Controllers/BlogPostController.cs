@@ -30,8 +30,10 @@ namespace HealthyFoodWebsite.Controllers
             return await blogRepository.GetByIdAsync(id);
         }
 
+        // Insertion Entrance
         public IActionResult ConfigureBlogPost()
         {
+            ViewBag.ConfigurationStatus = "Add";
             return View();
         }
 
@@ -42,19 +44,32 @@ namespace HealthyFoodWebsite.Controllers
             return await blogRepository.InsertAsync(entity);
         }
 
+
+        // Update Entrance
+        public async Task<IActionResult> UpdateAsync(int id)
+        {
+            ViewBag.ConfigurationStatus = "Update";
+            return View("ConfigureBlogPost", await blogRepository.GetByIdAsync(id));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<bool> UpdateAsync(BlogPost entity)
         {
             return await blogRepository.UpdateAsync(entity);
         }
 
-        public async Task<bool> DeactivateAsync(BlogPost entity)
+
+        public async Task<bool> DeactivateAsync(int id)
         {
-            return await blogRepository.DeactivateAsync(entity);
+            var entity = await blogRepository.GetByIdAsync(id);
+            return await blogRepository.DeactivateAsync(entity!);
         }
 
-        public async Task<bool> DeleteAsync(BlogPost entity)
+        public async Task<bool> DeleteAsync(int id)
         {
-            return await blogRepository.DeleteAsync(entity);
+            var entity = await blogRepository.GetByIdAsync(id);
+            return await blogRepository.DeleteAsync(entity!);
         }
 
         public async Task<IActionResult> GetBlogPost(int postId)

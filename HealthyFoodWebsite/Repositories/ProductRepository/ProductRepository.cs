@@ -120,6 +120,9 @@ namespace HealthyFoodWebsite.Repositories.ProductRepository
                 else if (entity.IsDisplayed == false)
                     entity.IsDisplayed = true;
 
+                else
+                    throw new Exception();
+
                 await semaphoreSlim.WaitAsync(-1);
 
                 await dbContext.SaveChangesAsync();

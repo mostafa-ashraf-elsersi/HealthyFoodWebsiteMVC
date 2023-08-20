@@ -1,4 +1,5 @@
 ﻿using HealthyFoodWebsite.Models;
+using HealthyFoodWebsite.Repositories.BlogSubscriberRepository;
 using HealthyFoodWebsite.Repositories.LoggerRepository;
 using HealthyFoodWebsite.ViewModels;
 using Microsoft.AspNetCore.Authentication;
@@ -12,11 +13,15 @@ namespace HealthyFoodWebsite.Controllers
     {
         // Object Fields Zone
         private readonly AbstractLoggerRepository loggerRepository;
+        private readonly AbstractBlogSubscriberRepository blogSubscriberRepository;
 
 
         // Dependency Injection Zone
-        public LoggerController(AbstractLoggerRepository loggerRepository) =>
+        public LoggerController(AbstractLoggerRepository loggerRepository, AbstractBlogSubscriberRepository blogSubscriberRepository)
+        {
             this.loggerRepository = loggerRepository;
+            this.blogSubscriberRepository = blogSubscriberRepository;
+        }
 
 
         // Object Methods Zone
@@ -25,11 +30,8 @@ namespace HealthyFoodWebsite.Controllers
             return View("AdminsGrid", await loggerRepository.GetAllAdminsAsync());
         }
 
-        public async Task<Logger?> GetByIdAsync(int id)
-        {
-            return await loggerRepository.GetByIdAsync(id);
-        }
 
+        // Login Entrance
         public IActionResult LogIn()
         {
             return View();
@@ -41,6 +43,7 @@ namespace HealthyFoodWebsite.Controllers
         {
             var logger = await loggerRepository.CheckSystemLoggerExistence(credentialsParameters.Username,
                                                                                  credentialsParameters.Password);
+            // TODO: Prevent deactivated loggers from logging into the system.
 
             if (logger is not null)
             {
@@ -77,6 +80,8 @@ namespace HealthyFoodWebsite.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
+
+        // Insertion Entrance
         public IActionResult Register()
         {
             return View();
@@ -89,19 +94,43 @@ namespace HealthyFoodWebsite.Controllers
             return await loggerRepository.InsertAsync(entity);
         }
 
+
+        // Update Entrance
+        public async Task<IActionResult> UpdateAsync(int id)
+        {
+            var entity = await loggerRepository.GetByIdAsync(id);
+
+            if (entity?.Role != "Admin")
+                ViewBag.AccountTypeWord = "Your";
+            else
+                ViewBag.AccountTypeWord = "Admin";
+
+            if (await blogSubscriberRepository.SearchForSubscriptionsOfUsername(entity!.Username))
+                ViewBag.HasBlogSubscriptions = true;
+            else
+                ViewBag.HasBlogSubscriptions = false;
+
+            return View("EditProfile", entity);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<bool> UpdateAsync(Logger entity)
         {
             return await loggerRepository.UpdateAsync(entity);
         }
 
-        public async Task<bool> DeactivateAsync(Logger entity)
+
+        public async Task<bool> DeactivateAsync(int id)
         {
-            return await loggerRepository.DeactivateAsync(entity);
+            var entity = await loggerRepository.GetByIdAsync(id);
+            return await loggerRepository.DeactivateAsync(entity!);
         }
 
-        public async Task<bool> DeleteAsync(Logger entity)
+        public async Task<bool> DeleteAsync(int id)
         {
-            return await loggerRepository.DeleteAsync(entity);
+            var entity = await loggerRepository.GetByIdAsync(id);
+            return await loggerRepository.DeleteAsync(entity!);
         }
     }
 }

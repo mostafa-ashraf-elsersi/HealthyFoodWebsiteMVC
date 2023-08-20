@@ -11,6 +11,6 @@ namespace HealthyFoodWebsite.Controllers.IController
 
         Task<bool> UpdateAsync(T entity) => throw new NotImplementedException();
 
-        Task<bool> DeleteAsync(T entity) => throw new NotImplementedException();
+        Task<bool> DeleteAsync(int id) => throw new NotImplementedException();
     }
 }

@@ -18,5 +18,7 @@ namespace HealthyFoodWebsite.Repositories.TestimonialRepository
 
         // Child Object Methods Zone
         public abstract Task<Logger?> GetUserTestimonialsAsync();
+
+        public abstract Task<bool> ToggleSeenOrUnseenAsync(Testimonial entity);
     }
 }

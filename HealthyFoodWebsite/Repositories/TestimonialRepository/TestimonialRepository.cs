@@ -23,6 +23,7 @@ namespace HealthyFoodWebsite.Repositories.TestimonialRepository
             var testimonials = await dbContext
                 .Testimonial
                 .Include(testimonial => testimonial.Logger)
+                .OrderBy(testimonial => testimonial.SeenByAdmin)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -66,6 +67,33 @@ namespace HealthyFoodWebsite.Repositories.TestimonialRepository
                 entity.LoggerId = 1; // TODO: Get the logger Id the right way.
 
                 await dbContext.Testimonial.AddAsync(entity);
+                await dbContext.SaveChangesAsync();
+
+                semaphoreSlim.Release();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override async Task<bool> ToggleSeenOrUnseenAsync(Testimonial entity)
+        {
+            try
+            {
+                if (entity.SeenByAdmin == true)
+                    entity.SeenByAdmin = false;
+
+                else if (entity.SeenByAdmin == false)
+                    entity.SeenByAdmin = true;
+
+                else
+                    throw new Exception();
+
+                await semaphoreSlim.WaitAsync(-1);
+
                 await dbContext.SaveChangesAsync();
 
                 semaphoreSlim.Release();
