@@ -3,6 +3,7 @@ using HealthyFoodWebsite.Repositories.ProductRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace HealthyFoodWebsite.Repositories.ShoppingBag
 {
@@ -10,14 +11,16 @@ namespace HealthyFoodWebsite.Repositories.ShoppingBag
     {
         // Object Fields Zone
         private readonly HealthyFoodDbContext dbContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly AbstractProductRepository productRepository;
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
 
         // Dependency Injection Zone
-        public ShoppingBagRepository(HealthyFoodDbContext dbContext, AbstractProductRepository productRepository)
+        public ShoppingBagRepository(HealthyFoodDbContext dbContext, IHttpContextAccessor httpContextAccessor, AbstractProductRepository productRepository)
         {
             this.dbContext = dbContext;
+            this.httpContextAccessor = httpContextAccessor;
             this.productRepository = productRepository;
         }
 
@@ -29,7 +32,7 @@ namespace HealthyFoodWebsite.Repositories.ShoppingBag
 
             var userItems = await dbContext
                .ShoppingBag
-               .Where(item => item.LoggerId == 1 && item.Status == "Active") // TODO: Get the current logger Id.
+               .Where(item => item.LoggerId.ToString() == httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.SerialNumber) && item.Status == "Active")
                .AsNoTracking()
                .ToListAsync();
 
@@ -62,7 +65,7 @@ namespace HealthyFoodWebsite.Repositories.ShoppingBag
                     Name = product!.Name,
                     UnitPrice = product.Price,
                     SubTotalPrice = product.Price,
-                    LoggerId = 1 // TODO: Get the current logger Id.
+                    LoggerId = int.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.SerialNumber)!)
                 };
 
                 await semaphoreSlim.WaitAsync(-1);

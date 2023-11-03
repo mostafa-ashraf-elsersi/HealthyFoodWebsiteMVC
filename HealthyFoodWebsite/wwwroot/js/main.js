@@ -49,6 +49,14 @@
     });
 
 
+    // Copyright area
+    var setCopyrightDivContent = function () {
+        var copyrightTextContainer = document.getElementById('copyright-text-container');
+        copyrightTextContainer.innerHTML = `&copy;&nbsp;${new Date().getFullYear()}&nbsp;-&nbsp;All Rights Reserved`;
+    }
+    setCopyrightDivContent();
+
+
 })(jQuery);
 
 /*  ==========================================

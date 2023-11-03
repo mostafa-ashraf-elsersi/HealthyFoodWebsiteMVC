@@ -47,7 +47,7 @@
         <div class="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
             <div class="top-bar row gx-0 align-items-center d-none d-lg-flex">
                 <div class="col-lg-8 px-5 text-start">
-                    <small><i class="fa fa-map-marker-alt me-2"></i>Tanta, Gharbyia, Egypt</small>
+                    <small><i class="fa fa-map-marker-alt me-2"></i>Gharbyia, Egypt</small>
                     <a href="mailto:mostafaashrafelsersi@gmail.com"><small class="ms-4"><i class="fa fa-envelope me-2"></i>mostafaashrafelsersi@gmail.com</small></a>
                     <a href="tel:+201550012835"><small class="ms-4"><i class="fa fa-mobile me-2"></i>01550012835</small></a>
                 </div>
@@ -60,7 +60,7 @@
 
             <nav class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
                 <a href="#" class="navbar-brand ms-4 ms-lg-0">
-                    <h1 class="fw-bold text-primary m-0">Healthy<span class="text-secondary">Food</span></h1>
+                    <h1 class="fw-bold text-primary ms-0 ms-lg-5">Healthy<span class="text-secondary">Food</span></h1>
                 </a>
                 <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
@@ -68,41 +68,102 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto p-4 p-lg-0">
                         <a asp-controller="Home" asp-action="GetView" class="nav-item nav-link active">Home</a>
-                        <a asp-controller="Order" asp-action="GetUserOrders" class="nav-item nav-link">Customers Orders</a>
-                        <a asp-controller="Product" asp-action="Insert" class="nav-item nav-link">Add Product</a>
-                        <a asp-controller="Product" asp-action="GetAll" class="nav-item nav-link">Products</a>
-                        <a asp-controller="Testimonial" asp-action="GetAll" class="nav-item nav-link">Testimonials</a>
-                        <a asp-controller="ContactUs" asp-action="GetAll" class="nav-item nav-link">Messages</a>
+                        
+                        @if (User.IsInRole("BusinessOwner") || User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="Order" asp-action="GetUsersOrders" class="nav-item nav-link">Orders</a>
+                        }
+
+                        @if (User.IsInRole("BusinessOwner"))
+                        {
+                            <!-- Dropdown Menu -->
+                            <div class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Products</a>
+                                <div class="dropdown-menu m-0">
+                                    <a asp-controller="Product" asp-action="Insert" class="dropdown-item">Add Product</a>
+
+                                    <a asp-controller="Product" asp-action="GetAll" class="dropdown-item">All Products</a>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Product" asp-action="GetAll" class="nav-item nav-link">Products</a>
+                        }
+
+                        @if (User.IsInRole("BusinessOwner") || User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="ContactUs" asp-action="GetAll" class="nav-item nav-link">Messages</a>
+                        }
+
+                        <!-- Dropdown Menu -->
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu m-0">
-                                <a asp-controller="BlogPost" asp-action="ConfigureBlogPost" class="dropdown-item">Configure Blog Post</a>
+                                @if (User.IsInRole("BusinessOwner"))
+                                {
+                                    <a asp-controller="Testimonial" asp-action="GetAll" class="dropdown-item">Testimonials</a>
+                                    
+                                    <a asp-controller="BlogPost" asp-action="ConfigureBlogPost" class="dropdown-item">Add Blog Post</a>
+                                }
+
+                                @if (User.IsInRole("User"))
+                                {
+                                    <a asp-controller="Testimonial" asp-action="GetView" class="dropdown-item">Add Testimonial</a>
+                                    <a asp-controller="Testimonial" asp-action="GetUserTestimonials" class="dropdown-item">My Testimonials</a>
+                                }
+
                                 <a asp-controller="BlogPost" asp-action="GetPages" asp-route-pageIndex=0 class="dropdown-item">Blog Grid</a>
-                                <a asp-controller="Testimonial" asp-action="GetView" class="dropdown-item">Add Testimonial</a>
-                                <a asp-controller="Testimonial" asp-action="GetUserTestimonials" class="dropdown-item">My Testimonials</a>
                             </div>
                         </div>
-                        <a asp-controller="AboutUs" asp-action="GetAboutUsView" class="nav-item nav-link">About Us</a>
-                        <a asp-controller="ContactUs" asp-action="Insert" class="nav-item nav-link">Contact Us</a>
-                    </div>
-                    <div class="d-none d-lg-flex ms-2">
-                        <!-- Dropdown Menu -->
-                        <div class="nav-item dropdown">
-                            <a class="btn-sm-square border border-dark bg-white rounded-circle ms-3" style="cursor:pointer" data-bs-toggle="dropdown" aria-expanded="false">
-                                <small class="fa fa-user text-body"></small>
+
+                        @if (!(User.IsInRole("BusinessOwner") || User.IsInRole("Admin")))
+                        {
+                            <a asp-controller="ContactUs" asp-action="Insert" class="nav-item nav-link me-1">Contact Us</a>
+                            
+                            <a asp-controller="AboutUs" asp-action="GetView" class="nav-item nav-link">About Us</a>
+                        }
+
+                         @if (User.IsInRole("User"))
+                        {
+                            <!-- Shopping Bag Link-->
+                            <a class="nav-item btn-sm-square border border-dark bg-white me-3" style="margin-top:16px; width:40px; height:40px; border-radius:40px" asp-controller="ShoppingBag" asp-action="GetUserActiveShoppingBagItems">
+                                <span class="fa fa-shopping-bag text-body"></span>
                             </a>
-                            <ul class="dropdown-menu mt-4 p-0" style="position: absolute; right: -80px;">
-                                <li><a class="dropdown-item" asp-controller="Logger" asp-action="Login">Log in</a></li>
-                                <li><a class="dropdown-item" asp-controller="Logger" asp-action="Register">Register</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" asp-controller="Logger" asp-action="GetAllAdmins">System Admins</a></li>
-                                <li><a class="dropdown-item" asp-controller="Logger" asp-action="Update" asp-route-id="1">Edit Profile</a></li>
+                        }
+
+                        <!-- Dropdown Menu -->
+                        <div class="nav-item dropdown" style="margin-right:75px;">
+                            <a class="btn-sm-square border border-dark bg-white mb-1 mb-lg-0" style="margin-top:16px; width:40px; height:40px; border-radius:40px" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="fa fa-user text-body"></span>
+                            </a>
+                            <ul class="dropdown-menu m-0">
+                                @if (Context.Request.Cookies[".AspNetCore.Cookies"] == null)
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="Login">Log in</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="Register">Register</a></li>
+                                }
+                                else
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="SignOutSystemLogger">Sign out</a></li>
+                                }
+
+                                @if (User.IsInRole("BusinessOwner") || User.IsInRole("User"))
+                                {
+                                    <li><hr class="dropdown-divider"></li>
+                                }
+
+                                @if (User.IsInRole("BusinessOwner"))
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="GetAllAdmins">Sys. Admins</a></li>
+                                }
+
+                                @if (User.IsInRole("BusinessOwner") || User.IsInRole("User"))
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="Update" asp-route-id="1">My Profile</a></li>
+                                }
                             </ul>
                         </div>
-                        <!-- Shopping Bag Link-->
-                        <a class="btn-sm-square border border-dark bg-white rounded-circle ms-3" asp-controller="ShoppingBag" asp-action="GetUserActiveShoppingBagItems">
-                            <small class="fa fa-shopping-bag text-body"></small>
-                        </a>
                     </div>
                 </div>
             </nav>
@@ -118,34 +179,37 @@
         <!-- Footer Start -->
         <div class="container-fluid bg-dark footer pt-5 wow fadeIn" data-wow-delay="0.1s">
             <div class="container py-5">
-                <div class="row g-6">
-                    <div class="col-lg-3 col-md-6">
+                <div class="row">
+                    <div class="col-12 mb-4 col-md-6 col-lg-3 mb-lg-0">
                         <h1 class="fw-bold text-primary mb-4">Healthy<span class="text-secondary">Food</span></h1>
-                        <p>A website to buy fresh fruits and vegetables from, with affordable prices.</p>
+                        <p style="text-align:justify">A website to buy fresh fruits and vegetables from, with affordable prices.</p>
                         <div class="d-flex pt-2">
                             <a class="btn btn-square btn-outline-light rounded-circle me-1" href="https://www.facebook.com/profile.php?id=100091729882218" target="_blank"><i class="fab fa-facebook-f"></i></a>
                             <a class="btn btn-square btn-outline-light rounded-circle ms-2" href="https://www.linkedin.com/in/mostafa-ashraf-elsersi" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-12 mb-4 col-md-6 col-lg-2 mb-lg-0">
                         <h4 class="text-light mb-4">Address</h4>
-                        <p><i class="fa fa-map-marker-alt me-3"></i>Tanta, Gharbyia, Egypt</p>
+                        <p><i class="fa fa-map-marker-alt me-3"></i>Gharbyia, Egypt</p>
                         <p><a href="tel:+201550012835"><i class="fa fa-phone-alt me-3"></i>01550012835</a></p>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-12 mb-4 col-md-6 mb-md-0 col-lg-3">
                         <h4 class="text-light mb-4">Quick Links</h4>
-                        <a class="btn btn-link" asp-controller="AboutUs" asp-action="GetAboutUsView">About Us</a>
-                        <a class="btn btn-link" asp-controller="ContactUs" asp-action="GetContactUsView">Contact Us</a>
-                        <a class="btn btn-link" href="">Privacy Policy</a>
-                        <a class="btn btn-link" href="">Terms And Conditions</a>
-                        <a class="btn btn-link" href="">FAQs</a>
+                        <a class="btn btn-link" asp-controller="AboutUs" asp-action="GetView">About Us</a>
+                         @if (!(User.IsInRole("BusinessOwner") || User.IsInRole("Admin")))
+                         {
+                            <a class="btn btn-link" asp-controller="ContactUs" asp-action="Insert">Contact Us</a>
+                         }
+                        <a class="btn btn-link" asp-controller="OtherPages" asp-action="PrivacyPolicy">Privacy Policy</a>
+                        <a class="btn btn-link" asp-controller="OtherPages" asp-action="TermsAndConditions">Terms And Conditions</a>
+                        <a class="btn btn-link" asp-controller="OtherPages" asp-action="Faqs">FAQs</a>
                     </div>
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-12 mb-4 col-md-6 mb-md-0 col-lg-4">
                         <h4 class="text-light mb-4">Blog Posts Letter</h4>
-                        <p>Subscribe in my blog posts letter service to get notifications considering latest published posts.</p>
+                        <p style="text-align:justify">Subscribe in my blog posts letter service to get notifications considering latest published posts.</p>
                         <form asp-controller="BlogSubscriber" asp-action="Insert" method="post">
                             <div class="position-relative mx-auto d-flex justify-content-start" style="max-width: 400px;">
-                                <input class="form-control bg-transparent w-100 py-3 ps-4 pe-5" placeholder="Your Email" name="EmailAddress" />
+                                <input type="email" class="form-control bg-transparent w-100 py-3 ps-4 pe-5" placeholder="Email" name="EmailAddress" required/>
                                 <button type="submit" class="btn btn-primary py-2 ms-2">Subscribe</button>
                             </div>
                         </form>
@@ -155,12 +219,12 @@
             <div class="container-fluid copyright">
                 <div class="container">
                     <div class="row">
-                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy;2023 <a href="#">HealthyFood</a> - All Right Reserved.
-                        </div>
-                        <div class="col-md-6 text-center text-md-end">
+                        <div id="copyright-text-container" class="col-md-4 col-lg-3 text-center text-md-start mb-3 mb-md-0"></div>
+                        <div class="col-md-8 col-lg-9 d-flex justify-content-start justify-content-lg-end flex-wrap">
                             <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                            Designed By: <a href="https://htmlcodex.com">HTML Codex</a> | Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                            <span>Designed By: <a href="https://htmlcodex.com" target="_blank">HTML Codex</a>&nbsp;|&nbsp;</span>
+                            <span>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>&nbsp;|&nbsp;</span>
+                            <span>Developed By: <a href="https://mostafa-ashraf.org" target="_blank">Mostafa Ashraf</a></span>
                         </div>
                     </div>
                 </div>
@@ -173,14 +237,16 @@
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
-    @*<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/bootstrap/js/bootstrap.min.js"></script>
     <script src="~/lib/wow/wow.min.js"></script>
     <script src="~/lib/easing/easing.min.js"></script>
     <script src="~/lib/waypoints/waypoints.min.js"></script>
     <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- JQuery Validation Libs. -->
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
     <!-- Layout Javascript -->
     <script src="~/js/main.js"></script>

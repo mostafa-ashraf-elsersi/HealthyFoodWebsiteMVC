@@ -4,6 +4,7 @@ namespace HealthyFoodWebsite.Controllers
 {
     public class ErrorController : Controller
     {
+        // Object Methods Zone
         public IActionResult GetView()
         {
             return View("Error");

@@ -277,19 +277,24 @@
 #upload-label {
     position: absolute;
     top: 50%;
-    left: 1rem;
     transform: translateY(-50%);
+}
+
+@media only screen and (max-width: 767px) {
+    #upload-button {
+        display: none;
+    }
 }
 
 .image-area {
     border: 2px dashed rgb(77, 77, 77);
     padding: 1rem;
     position: relative;
-    width: 35%;
+    max-width: 500px;
 }
 
 .image-area::before {
-    content: 'Uploaded image result';
+    content: 'Uploaded Image';
     color: rgb(77, 77, 77);
     font-weight: bold;
     text-transform: uppercase;

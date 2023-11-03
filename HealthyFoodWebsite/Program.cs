@@ -29,6 +29,7 @@ namespace HealthyFoodWebsite
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultString"));
             }, ServiceLifetime.Scoped, ServiceLifetime.Scoped);
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AbstractLoggerRepository, LoggerRepository>();
             builder.Services.AddScoped<AbstractProductRepository, ProductRepository>();
             builder.Services.AddScoped<AbstractTestimonialRepository, TestimonialRepository>();

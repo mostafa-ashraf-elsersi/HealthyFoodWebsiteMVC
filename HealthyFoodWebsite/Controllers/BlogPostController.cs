@@ -1,9 +1,12 @@
 ﻿using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.BlogRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HealthyFoodWebsite.Controllers
 {
+    [Authorize(Roles = "BusinessOwner")]
     public class BlogPostController : Controller, IController.IOperationalController<BlogPost>
     {
         // Object Fields Zone
@@ -16,6 +19,7 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
+        [AllowAnonymous]
         public async Task<IActionResult> GetPagesAsync(int pageIndex = 0)
         {
             var pagesTuple = await blogRepository.GetPagesWithCountAsync(pageIndex);
@@ -25,10 +29,6 @@ namespace HealthyFoodWebsite.Controllers
             return View("BlogGrid", pagesTuple.Item1);
         }
 
-        public async Task<BlogPost?> GetByIdAsync(int id)
-        {
-            return await blogRepository.GetByIdAsync(id);
-        }
 
         // Insertion Entrance
         public IActionResult ConfigureBlogPost()
@@ -39,9 +39,23 @@ namespace HealthyFoodWebsite.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> InsertAsync(BlogPost entity)
+        public async Task<IActionResult> InsertAsync([Bind("PosterFile, Title, Content, AuthorType, IsDisplayed")] BlogPost entity)
         {
-            return await blogRepository.InsertAsync(entity);
+            ViewBag.ConfigurationStatus = "Add";
+
+            if (entity.PosterFile == null)
+            {
+                ModelState.AddModelError<BlogPost>(e => e.PosterFile, "The (Post Poster) field is required.");
+                return View("ConfigureBlogPost", entity);
+            }
+
+            if (ModelState.IsValid)
+            {
+                await blogRepository.InsertAsync(entity);
+                return View("ConfigureBlogPost");
+            }
+
+            return View("ConfigureBlogPost", entity);
         }
 
 
@@ -54,9 +68,17 @@ namespace HealthyFoodWebsite.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> UpdateAsync(BlogPost entity)
+        public async Task<IActionResult> UpdateAsync([Bind("Id, PosterUri, PosterFile, Title, Content, AuthorType, IsDisplayed")] BlogPost entity)
         {
-            return await blogRepository.UpdateAsync(entity);
+            ViewBag.ConfigurationStatus = "Update";
+
+            if (ModelState.IsValid)
+            {
+                await blogRepository.UpdateAsync(entity);
+                return View("BlogGrid");
+            }
+
+            return View("ConfigureBlogPost", entity);
         }
 
 
@@ -72,6 +94,7 @@ namespace HealthyFoodWebsite.Controllers
             return await blogRepository.DeleteAsync(entity!);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetBlogPost(int postId)
         {
             return View("BlogPostViewer", await blogRepository.GetByIdAsync(postId));

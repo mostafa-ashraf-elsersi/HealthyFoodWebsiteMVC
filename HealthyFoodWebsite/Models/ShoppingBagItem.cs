@@ -29,6 +29,6 @@ namespace HealthyFoodWebsite.Models
         // Navigation Properties
         public Order? Order { get; set; }
 
-        public Logger Logger { get; set; } = null!;
+        public Logger? Logger { get; set; } = null!;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HealthyFoodWebsite.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HealthyFoodWebsite.Repositories.TestimonialRepository
 {
@@ -7,13 +8,16 @@ namespace HealthyFoodWebsite.Repositories.TestimonialRepository
     {
         // Object Fields Zone
         private readonly HealthyFoodDbContext dbContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
 
         // Dependency Injection Zone
-        public TestimonialRepository(HealthyFoodDbContext dbContext) =>
+        public TestimonialRepository(HealthyFoodDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+        {
             this.dbContext = dbContext;
-
+            this.httpContextAccessor = httpContextAccessor;
+        }
 
         // Object Methods Zone
         public override async Task<List<Testimonial>> GetAllAsync()
@@ -38,7 +42,7 @@ namespace HealthyFoodWebsite.Repositories.TestimonialRepository
 
             var userWithTestimonials = await dbContext
                .Logger
-               .Where(logger => logger.Id == 1) // TODO: Get the logger Id here.
+               .Where(logger => logger.Id.ToString() == httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.SerialNumber))
                .Include(logger => logger.Testimonials)
                .FirstOrDefaultAsync();
 
@@ -64,7 +68,7 @@ namespace HealthyFoodWebsite.Repositories.TestimonialRepository
             {
                 await semaphoreSlim.WaitAsync(-1);
 
-                entity.LoggerId = 1; // TODO: Get the logger Id the right way.
+                entity.LoggerId = int.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.SerialNumber)!);
 
                 await dbContext.Testimonial.AddAsync(entity);
                 await dbContext.SaveChangesAsync();

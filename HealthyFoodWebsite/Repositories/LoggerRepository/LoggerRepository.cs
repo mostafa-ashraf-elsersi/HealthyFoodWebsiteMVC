@@ -31,6 +31,34 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
             return admins;
         }
 
+        public override async Task<Logger?> GetLoggerWithSameUsernameOrNull(string username)
+        {
+            await semaphoreSlim.WaitAsync(-1);
+
+            var logger = await dbContext
+                .Logger
+                .Where(logger => logger.Username == username)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            semaphoreSlim.Release();
+
+            return logger;
+        }
+
+        public override async Task<bool> CheckSystemLoggerEmailExistence(string emailAddress)
+        {
+            await semaphoreSlim.WaitAsync(-1);
+
+            var isEmailExisted = await dbContext
+                .Logger
+                .AnyAsync(logger => logger.Email == emailAddress);
+
+            semaphoreSlim.Release();
+
+            return isEmailExisted;
+        }
+
         public override async Task<Logger?> GetByIdAsync(int id)
         {
             await semaphoreSlim.WaitAsync(-1);
@@ -42,7 +70,7 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
             return logger;
         }
 
-        public override async Task<Logger?> CheckSystemLoggerExistence(string username, string password)
+        public override async Task<Logger?> CheckSystemLoggerExistenceAsync(string username, string password)
         {
             await semaphoreSlim.WaitAsync(-1);
 

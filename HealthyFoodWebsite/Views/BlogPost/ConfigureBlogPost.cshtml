@@ -10,8 +10,13 @@
         #post-upload-label {
             position: absolute;
             top: 50%;
-            left: 1rem;
             transform: translateY(-50%);
+        }
+
+        @@media only screen and (max-width: 767px) {
+            #poster-upload-button {
+                display: none;
+            }
         }
 
         .poster-area {
@@ -21,23 +26,23 @@
             width: 100%;
         }
 
-            .poster-area::before {
-                content: 'Uploaded image result';
-                color: rgb(77, 77, 77);
-                font-weight: bold;
-                text-transform: uppercase;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-size: 0.8rem;
-                z-index: 1;
-            }
+        .poster-area::before {
+            content: 'Uploaded Image';
+            color: rgb(77, 77, 77);
+            font-weight: bold;
+            text-transform: uppercase;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            z-index: 1;
+        }
 
-            .poster-area img {
-                z-index: 2;
-                position: relative;
-            }
+        .poster-area img {
+            z-index: 2;
+            position: relative;
+        }
     </style>
 }
 
@@ -62,12 +67,12 @@
                 <h1 class="display-5">@ViewBag.ConfigurationStatus Post</h1>
             </div>
             <br />
-            <div class="text-center row">
-                <form method="post" enctype="multipart/form-data">
-                    <div class="mx-auto mb-3">
+            <div class="text-start row">
+                <form asp-action="Insert" method="post" enctype="multipart/form-data">
+                    <div class="mx-auto mb-4">
                         <!-- Uploaded image area-->
                         <div class="text-start">
-                            <p class="fst-italic text-black-50">The image uploaded will be rendered inside the box below.</p>
+                            <p class="fst-italic text-black-50" style="text-align:justify;">The image uploaded will be rendered inside the box below.</p>
                             @{
                                 string status = ViewBag.ConfigurationStatus;
                                 <div class="poster-area mt-4 mb-3 text-center"><img id="posterResult" src="@(status == "Add" ? "#" : Model.PosterUri)" alt="" class="img-fluid"></div>
@@ -78,29 +83,35 @@
                         <!-- Image upload input-->
                         <div class="input-group px-2 py-2 bg-white border border-black">
                             <input asp-for=PosterFile accept="image/*" onchange="readURL(this);" class="form-control">
-                            <label id="post-upload-label" asp-for=PosterFile>Poster</label>
-                            <div class="input-group-append">
+                            <label id="post-upload-label" asp-for=PosterFile>Upload Poster</label>
+                            <div id="poster-upload-button" class="input-group-append">
                                 <label asp-for=PosterFile class="btn btn-outline-info m-0 rounded-pill px-4"> <i class="fa fa-upload me-2 text-muted"></i><small class="text-uppercase fw-bold text-muted">Upload Image</small></label>
                             </div>
                         </div>
+                        <span asp-validation-for="PosterFile" class="text-danger"></span>
                     </div>
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-4">
                         <input asp-for=Title class="form-control" placeholder="">
                         <label asp-for=Title>Name</label>
+                        <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-4">
                         <textarea asp-for=Content class="form-control" placeholder="" style="height: 200px"></textarea>
                         <label asp-for=Content>Content</label>
+                        <span asp-validation-for="Content" class="text-danger"></span>
                     </div>
-                    <select asp-for=AuthorType class="form-select py-3 mb-3" aria-label="Select Author Role">
-                        <option selected>Choose Author Type...</option>
-                        <option value="Admin">Admin</option>
-                    </select>
-                    <div class="form-check form-switch text-start mb-3">
+                    <div class="mb-4">
+                        <select asp-for=AuthorType class="form-select py-3" aria-label="Select Author Role">
+                            <option value="ChooseAuthorType" selected>Choose Author Type...</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                        <span asp-validation-for="AuthorType" class="text-danger"></span>
+                    </div>
+                    <div class="form-check form-switch text-start mb-4">
                         <input asp-for=IsDisplayed class="form-check-input" role="checkbox">
                         <label asp-for=IsDisplayed class="form-check-label">Users See This (Initially)</label>
                     </div>
-                    <div class="d-flex justify-content-around w-50 mx-auto">
+                    <div class="d-flex justify-content-around">
                         <button type="submit" class="btn btn-primary">@ViewBag.ConfigurationStatus</button>
                         <button type="reset" class="btn btn-danger">Cancel</button>
                     </div>

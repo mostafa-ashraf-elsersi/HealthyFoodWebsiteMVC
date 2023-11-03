@@ -23,55 +23,62 @@
             </div>
             <br />
             <div class="text-center row">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Subject</th>
-                            <th scope="col">Message</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            int counter = 1;
-                            foreach (CustomerMessage message in Model)
-                            {
-                                <tr id="message-number-@message.Id">
-                                    <td>@(counter++)</td>
-                                    <td>@message.UserName</td>
-                                    <td>@message.PhoneNumber</td>
-                                    <td>@message.Subject</td>
-                                    <td>@message.Message</td>
-                                    <!-- Button trigger modal -->
-                                    <td><button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop-@message.Id">Delete</button></td>
-                                </tr>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Subject</th>
+                                <th scope="col">Message</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int counter = 1;
+                                foreach (CustomerMessage message in Model)
+                                {
+                                    <tr id="message-number-@message.Id">
+                                        <td>@(counter++)</td>
+                                        <td>@message.UserName</td>
+                                        <td>@message.PhoneNumber</td>
+                                        <td>@message.Subject</td>
+                                        <td>@message.Message</td>
+                                        @if (User.IsInRole("BusinessOwner"))
+                                        {
+                                            <!-- Button trigger modal -->
+                                            <td><button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop-@message.Id">Delete</button></td>
+                                        }
+                                    </tr>
+                                }
                             }
-                        }
-                    </tbody>
-                </table>
-
-                @foreach(CustomerMessage message in Model)
+                        </tbody>
+                    </table>
+                </div>
+                @if (User.IsInRole("BusinessOwner"))
                 {
-                    <!-- Modal -->
-                    <div class="modal fade" id="staticBackdrop-@message.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Deletion!</h1>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to delete this message from <strong>@message.UserName</strong>?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" onclick="deleteAsync(@message.Id)" data-bs-dismiss="modal">Yes, I meant it</button>
+                    @foreach (CustomerMessage message in Model)
+                    {
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop-@message.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Deletion!</h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this message from <strong>@message.UserName</strong>?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" onclick="deleteAsync(@message.Id)" data-bs-dismiss="modal">Yes, I meant it</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 }
 
             </div>

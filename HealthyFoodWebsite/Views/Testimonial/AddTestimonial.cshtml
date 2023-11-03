@@ -78,19 +78,19 @@
                     <div class="col-md-12 mb-3">
                         <div class="ms-2 fw-bold fs-5">Rate Us</div>
                         <div class="stars">
-                            <input class="star star-5" id="star-5" type="radio" name="RatingValue" value="5"/>
+                            <input type="radio" class="star star-5" id="star-5" name="RatingValue" value="5" />
                             <label class="star star-5" for="star-5"></label>
 
-                            <input class="star star-4" id="star-4" type="radio" name="RatingValue" value="4"/>
+                            <input type="radio" class="star star-4" id="star-4" name="RatingValue" value="4" />
                             <label class="star star-4" for="star-4"></label>
 
-                            <input class="star star-3" id="star-3" type="radio" name="RatingValue" value="3"/>
+                            <input type="radio" class="star star-3" id="star-3" name="RatingValue" value="3" />
                             <label class="star star-3" for="star-3"></label>
 
-                            <input class="star star-2" id="star-2" type="radio" name="RatingValue" value="2"/>
+                            <input type="radio" class="star star-2" id="star-2" name="RatingValue" value="2" />
                             <label class="star star-2" for="star-2"></label>
 
-                            <input class="star star-1" id="star-1" type="radio" name="RatingValue" value="1"/>
+                            <input type="radio" class="star star-1" id="star-1" name="RatingValue" value="1" />
                             <label class="star star-1" for="star-1"></label>
                         </div>
                     </div>
@@ -100,7 +100,11 @@
                         <label asp-for=Content>Testimonial Content</label>
                     </div>
 
-                    <div class="d-flex justify-content-around w-50 mx-auto">
+                    <div class="text-start">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-evenly">
                         <button type="submit" class="btn btn-primary">Add</button>
                         <button type="reset" class="btn btn-danger">Reset</button>
                     </div>

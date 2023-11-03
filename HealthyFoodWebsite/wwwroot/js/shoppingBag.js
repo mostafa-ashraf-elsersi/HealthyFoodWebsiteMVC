@@ -308,6 +308,8 @@ async function constructThenRelateThenRedirect(event)
 {
     // Constructing A New Order To Relate It With The Confirmed Shopping Bag Items.
 
+    let currentLoggerId = Number(document.getElementById('current-logger-id').textContent.trim());
+
     let orderDetails = JSON.stringify({
         id: 0,
         status: "Active",
@@ -315,7 +317,7 @@ async function constructThenRelateThenRedirect(event)
         startedPreparing: false,
         startedDelivering: false,
         totalCost: Number(totalPriceElement.textContent.split(' ')[1]),
-        loggerId: 1 //TODO: Get the correct Logger Id here.
+        loggerId: currentLoggerId
     });
 
     connection.invoke("PersistOrderInDatabaseThenReturnId", orderDetails)

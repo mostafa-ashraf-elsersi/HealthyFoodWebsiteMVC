@@ -1,5 +1,6 @@
 ﻿using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.ContactUsRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthyFoodWebsite.Controllers
@@ -16,6 +17,7 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
+        [Authorize(Roles = "BusinessOwner, Admin")]
         public async Task<IActionResult> GetAllAsync()
         {
             return View("Message", await contactUsRepository.GetAllAsync());
@@ -23,19 +25,25 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Insertion Entrance
+        [AllowAnonymous, Authorize(Roles = "User")]
         public IActionResult InsertAsync()
         {
             return View("ContactUs");
         }
 
+        [AllowAnonymous, Authorize(Roles = "User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> InsertAsync(CustomerMessage entity)
+        public async Task<bool> InsertAsync([Bind("UserName, PhoneNumber, Subject, Message")] CustomerMessage entity)
         {
-            return await contactUsRepository.InsertAsync(entity);
+            if (ModelState.IsValid)
+                return await contactUsRepository.InsertAsync(entity);
+            else
+                return false;
         }
 
 
+        [Authorize(Roles = "BusinessOwner")]
         public async Task<bool> DeleteAsync(int id)
         {
             var entity = await contactUsRepository.GetByIdAsync(id);

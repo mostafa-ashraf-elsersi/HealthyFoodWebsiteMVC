@@ -22,13 +22,9 @@ namespace HealthyFoodWebsite.Models
         // Inherited DbContext Methods
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            // TODO: Check global query filters for database entities.
-
             modelBuilder.Entity<Product>(options =>
             {
                 options.HasIndex(e => e.Name).IsUnique();
-                //options.HasQueryFilter(e => e.IsDisplayed);
             });
 
             modelBuilder.Entity<Logger>(options =>

@@ -43,7 +43,7 @@
 <!-- Testimonial Start -->
 <div class="container-fluid bg-light bg-icon py-6 mb-0">
     <div class="container">
-        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1500px;">
             <div>
                 <h1 class="display-5">Users Testimonials</h1>
             </div>
@@ -53,12 +53,12 @@
                 @{
                     foreach (var testimonial in Model)
                     {
-                        <div id="user-testimonial-number-@testimonial.Id" class="position-relative bg-white p-5 border border-black mt-4 mb-2" style="width: 35%">
+                        <div id="user-testimonial-number-@testimonial.Id" class="position-relative bg-white p-5 border border-black mt-4 mb-2">
                             <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
 
                             <div class="position-relative overflow-hidden">
                                 <div id="testimonial-seen-cover-@testimonial.Id" class="seen-cover @(testimonial.SeenByAdmin == false ? "invisible" : "")"></div>
-                                <p class="mb-1">@testimonial.Content</p>
+                                <p class="mb-4">@testimonial.Content</p>
                                 <span class="rating-stars-containers">
                                     <span hidden>@testimonial.RatingValue</span>
                                     <span class="fa fa-star fontSize25 invisible"></span>

@@ -15,12 +15,12 @@
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
-        <h1 class="display-3 mb-3 animated slideInDown">Blog Grid</h1>
+        <h1 class="display-3 mb-3 animated slideInDown" style="color:darkblue">Blog Grid</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
-                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Pages</a></li>
-                <li class="breadcrumb-item text-dark active" aria-current="page">Blog Grid</li>
+                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a style="color:white" asp-controller="Home" asp-action="GetHomeView">Pages</a></li>
+                <li class="breadcrumb-item active" style="color:white" aria-current="page">Blog Grid</li>
             </ol>
         </nav>
     </div>
@@ -39,8 +39,8 @@
                 {
                     <div id="post-number-@post.Id" class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                         <div class="position-relative bg-light overflow-hidden">
-                            <div id="post-deactivation-cover-@post.Id" class="deactivation-cover @(post.IsDisplayed == true ? "invisible" : "")"></div>
-                            <img class="img-fluid w-100" src="@post.PosterUri" alt="">
+                            <div id="post-deactivation-cover-@post.Id" style="min-height:300px" class="deactivation-cover @(post.IsDisplayed == true ? "invisible" : "")"></div>
+                            <a asp-controller="BlogPost" asp-action="GetBlogPost" asp-route-postId="@post.Id"><img class="img-fluid w-100" style="min-height:300px" src="@post.PosterUri" alt=""></a>
                         </div>
                         <div class="bg-light p-4">
                             <a class="d-block h5 lh-base mb-4" asp-controller="BlogPost" asp-action="GetBlogPost" asp-route-postId="@post.Id" >@post.Title</a>
@@ -48,15 +48,20 @@
                                 <small class="me-3"><i class="fa fa-user text-primary me-2"></i>@post.AuthorType</small>
                                 <small class="me-3"><i class="fa fa-calendar text-primary me-2"></i>@post.PublishingDate</small>
                             </div>
-                            <div class="d-flex flex-column mt-4 border-top">
-                                <div class="form-check form-switch my-2">
-                                    <input class="form-check-input" role="checkbox" id="visibilitySwitch" asp-for=@post.IsDisplayed onclick="deactivatePostAsync(@post.Id)">
-                                    <label class="form-check-label" for="visibilitySwitch">Show / Hide</label>
+
+                             @if (User.IsInRole("BusinessOwner"))
+                            {
+                                <div class="d-flex flex-column mt-4 border-top">
+                                    <div class="form-check form-switch my-2">
+                                        <input class="form-check-input" role="checkbox" id="visibilitySwitch" asp-for=@post.IsDisplayed onclick="deactivatePostAsync(@post.Id)">
+                                        <label class="form-check-label" for="visibilitySwitch">Show / Hide</label>
+                                    </div>
+                                    <a class="btn btn-primary mb-2" asp-action="Update" asp-route-id=@post.Id>Update</a>
+                                    <!-- Button trigger modal -->
+                                    <button class="btn btn-danger mb-2" type="button" data-bs-toggle="modal" data-bs-target="#postStaticBackdrop-@post.Id">Delete</button>
                                 </div>
-                                <a class="btn btn-primary mb-2" asp-action="Update" asp-route-id=@post.Id>Update</a>
-                                <!-- Button trigger modal -->
-                                <button class="btn btn-danger mb-2" type="button" data-bs-toggle="modal" data-bs-target="#postStaticBackdrop-@post.Id">Delete</button>
-                            </div>
+                            }
+
                         </div>
                     </div>
 
@@ -85,7 +90,7 @@
 <!-- Blog End -->
 <!-- Pagination Start -->
 <nav class="mb-5" aria-label="Blog Pages Navigation">
-    <ul class="pagination pagination-lg justify-content-center">
+    <ul class="pagination justify-content-center">
 
         @{
             var totalPagesCount = (int)ViewBag.PagesCount;

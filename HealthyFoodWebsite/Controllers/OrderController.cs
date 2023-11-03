@@ -1,9 +1,11 @@
 ﻿using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.OrderRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthyFoodWebsite.Controllers
 {
+    [Authorize(Roles = "BusinessOwner, Admin")]
     public class OrderController : Controller
     {
         // Object Fields Zone
@@ -16,15 +18,10 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
-        public async Task<IActionResult> GetUserOrdersAsync()
+        public async Task<IActionResult> GetUsersOrdersAsync()
         {
             ViewBag.UsersInactiveOrders = await orderRepository.GetAdminViewInactiveOrdersAsync();
             return View("Order", await orderRepository.GetAdminViewActiveOrdersAsync());
-        }
-
-        public async Task<bool> UpdateAsync(Order entity)
-        {
-            return await orderRepository.UpdateAsync(entity);
         }
 
         public async Task<bool> ChangePreparingOrDeliveringToTrue(int id, string mode)
@@ -39,6 +36,7 @@ namespace HealthyFoodWebsite.Controllers
             return await orderRepository.SealOrderAsDoneOrCancelled(entity!, status);
         }
 
+        [Authorize(Roles = "BusinessOwner")]
         public async Task<bool> PerformUserOrAdminViewDeletionAsync(int id, string view)
         {
             var entity = await orderRepository.GetByIdAsync(id);

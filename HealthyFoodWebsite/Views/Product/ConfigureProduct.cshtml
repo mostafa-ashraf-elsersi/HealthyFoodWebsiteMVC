@@ -22,12 +22,12 @@
                 <h1 class="display-5">@ViewBag.ConfigurationStatus Product</h1>
             </div>
             <br />
-            <div class="text-center row">
+            <div class="text-start row">
                 <form method="post" enctype="multipart/form-data">
-                    <div class="mx-auto mb-3">
+                    <div class="mx-auto mb-4">
                         <!-- Uploaded image area-->
                         <div class="text-start">
-                            <p class="fst-italic text-black-50">The image uploaded will be rendered inside the box below.</p>
+                            <p class="fst-italic text-black-50" style="text-align:justify;">The image uploaded will be rendered inside the box below.</p>
                             @{
                                 string status = ViewBag.ConfigurationStatus;
                                 <div class="image-area mt-4 mb-3 text-start"><img id="imageResult" src="@(status == "Add" ? "#" : Model.ImageUri)" alt="" class="img-fluid"></div>
@@ -38,31 +38,37 @@
                         <!-- Image input-->
                         <div class="input-group px-2 py-2 bg-white border border-black">
                             <input asp-for=ImageFile accept="image/*" onchange="readURL(this);" class="form-control">
-                            <label id="upload-label" asp-for=ImageFile>Product Image</label>
-                            <div class="input-group-append">
+                            <label id="upload-label" asp-for=ImageFile>Upload Image</label>
+                            <div id="upload-button" class="input-group-append">
                                 <label asp-for=ImageFile class="btn btn-outline-info m-0 rounded-pill px-4"> <i class="fa fa-upload me-2 text-muted"></i><small class="text-uppercase fw-bold text-muted">Upload Image</small></label>
                             </div>
                         </div>
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
                     </div>
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-4">
                         <input asp-for=Name class="form-control" placeholder="">
                         <label asp-for=Name>Name</label>
+                        <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-4">
                         <input asp-for=Price class="form-control" placeholder="">
                         <label asp-for=Price>Price</label>
+                        <span asp-validation-for="Price" class="text-danger"></span>
                     </div>
-                    <select asp-for=Category class="form-select py-3 mb-3" aria-label="Select product category">
-                        <option selected>Choose Category...</option>
-                        <option value="Vegetables">Vegetables</option>
-                        <option value="Fruits">Fruits</option>
-                        <option value="Fresh">Fresh</option>
-                    </select>
-                    <div class="form-check form-switch text-start mb-3">
+                    <div class="mb-4">
+                        <select asp-for=Category class="form-select py-3" aria-label="Select product category">
+                            <option value="ChooseCategory" selected>Choose Category...</option>
+                            <option value="Vegetables">Vegetables</option>
+                            <option value="Fruits">Fruits</option>
+                            <option value="Fresh">Fresh</option>
+                        </select>
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+                    <div class="form-check form-switch text-start mb-4">
                         <input asp-for=IsDisplayed class="form-check-input" role="checkbox">
                         <label asp-for=IsDisplayed class="form-check-label">Users See This (Initially)</label>
                     </div>
-                    <div class="d-flex justify-content-around w-50 mx-auto">
+                    <div class="d-flex justify-content-around">
                         <button type="submit" class="btn btn-primary">@ViewBag.ConfigurationStatus</button>
                         <button type="reset" class="btn btn-danger">Cancel</button>
                     </div>

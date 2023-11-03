@@ -1,7 +1,9 @@
 ﻿using HealthyFoodWebsite.Controllers.IController;
 using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.BlogSubscriberRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthyFoodWebsite.Controllers
 {
@@ -17,17 +19,24 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
-
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> InsertAsync(BlogSubscriber entity)
+        public async Task<bool> InsertAsync([Bind("Username, EmailAddress")] BlogSubscriber entity)
         {
-            return await blogSubscriberRepository.InsertAsync(entity);
+            if (User.Identity?.IsAuthenticated == true && (User.IsInRole("BusinessOwner") || User.IsInRole("User")))
+                if (ModelState.IsValid)
+                    return await blogSubscriberRepository.InsertAsync(entity);
+                else
+                    return false;
+            else
+                return false;
         }
 
+        [Authorize(Roles = "BusinessOwner, User")]
         public async Task<bool> DeleteSubscriptionsAsync()
         {
-            var subscriptions = await blogSubscriberRepository.GetUserSubscriptionsAsync("mostafa_ashraf"); // TODO: Get the correct username.
+            var subscriptions = await blogSubscriberRepository.GetUserSubscriptionsAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             return await blogSubscriberRepository.DeleteSubscriptionsAsync(subscriptions);
         }
     }

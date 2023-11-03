@@ -1,10 +1,13 @@
 ﻿using HealthyFoodWebsite.Controllers.IController;
 using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.ProductRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HealthyFoodWebsite.Controllers
 {
+    [Authorize(Roles = "BusinessOwner")]
     public class ProductController : Controller, IController.IOperationalController<Product>
     {
         // Object Fields Zone
@@ -17,11 +20,13 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllAsync()
         {
             return View("Product", await productRepository.GetAllAsync());
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> FilterByCategoryAsync(string category)
         {
             return Json(await productRepository.FilterByCategoryAsync(category));
@@ -37,9 +42,23 @@ namespace HealthyFoodWebsite.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> InsertAsync(Product entity)
+        public async Task<IActionResult> InsertAsync([Bind("ImageFile, Name, Price, Category, IsDisplayed")] Product entity)
         {
-            return await productRepository.InsertAsync(entity);
+            ViewBag.ConfigurationStatus = "Add";
+
+            if (entity.ImageFile == null)
+            {
+                ModelState.AddModelError<Product>(e => e.ImageFile, "The (Product Image) field is required.");
+                return View("ConfigureProduct", entity);
+            }
+
+            if (ModelState.IsValid)
+            {
+                await productRepository.InsertAsync(entity);
+                return View("ConfigureProduct");
+            }
+
+            return View("ConfigureProduct", entity);
         }
 
 
@@ -52,9 +71,17 @@ namespace HealthyFoodWebsite.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> UpdateAsync(Product entity)
+        public async Task<IActionResult> UpdateAsync([Bind("Id, ImageUri, ImageFile, Name, Price, Category, IsDisplayed")] Product entity)
         {
-            return await productRepository.UpdateAsync(entity);
+            ViewBag.ConfigurationStatus = "Update";
+
+            if (ModelState.IsValid)
+            {
+                await productRepository.UpdateAsync(entity);
+                return View("Product");
+            }
+
+            return View("ConfigureProduct", entity);
         }
 
 

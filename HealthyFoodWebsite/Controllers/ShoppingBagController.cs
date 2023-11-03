@@ -1,10 +1,12 @@
 ﻿using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.OrderRepository;
 using HealthyFoodWebsite.Repositories.ShoppingBag;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthyFoodWebsite.Controllers
 {
+    [Authorize(Roles = "User")]
     public class ShoppingBagController : Controller, IController.IOperationalController<ShoppingBagItem>
     {
         // Object Fields Zone
@@ -27,9 +29,13 @@ namespace HealthyFoodWebsite.Controllers
             return View("ShoppingBag", await shoppingBagRepository.GetUserActiveShoppingBagItemsAsync());
         }
 
+        [AllowAnonymous]
         public async Task<bool> InsertUsingProductAsync(int productId)
         {
-            return await shoppingBagRepository.InsertUsingProductAsync(productId);
+            if (User.Identity?.IsAuthenticated == true && User.IsInRole("User"))
+                return await shoppingBagRepository.InsertUsingProductAsync(productId);
+            else
+                return false;
         }
 
         [HttpPost]

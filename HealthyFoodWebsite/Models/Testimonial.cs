@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthyFoodWebsite.Models
@@ -8,9 +10,9 @@ namespace HealthyFoodWebsite.Models
         [Key]
         public int Id { get; set; } = 0;
 
-        public string Content { get; set; } = string.Empty;
+        public string? Content { get; set; } = string.Empty; // Content is null due to a validation trade-off.
 
-        public byte RatingValue { get; set; }
+        public byte? RatingValue { get; set; } // RatingValue is null due to a validation trade-off.
 
         public bool SeenByAdmin { get; set; } = false;
 
@@ -19,6 +21,6 @@ namespace HealthyFoodWebsite.Models
 
 
         // Navigation Properties
-        public Logger Logger { get; set; } = null!;
+        public Logger? Logger { get; set; } = null!;
     }
 }

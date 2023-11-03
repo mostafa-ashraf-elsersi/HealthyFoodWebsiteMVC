@@ -1,5 +1,6 @@
 ﻿using HealthyFoodWebsite.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HealthyFoodWebsite.Repositories.OrderRepository
 {
@@ -7,12 +8,16 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
     {
         // Object Fields Zone
         private readonly HealthyFoodDbContext dbContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
 
 
         // Dependency Injection Zone
-        public OrderRepository(HealthyFoodDbContext dbContext) =>
+        public OrderRepository(HealthyFoodDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+        {
             this.dbContext = dbContext;
+            this.httpContextAccessor = httpContextAccessor;
+        }
 
 
         // Object Methods Zone
@@ -58,8 +63,8 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
             var confirmedOrders = await dbContext
               .Order
-              .Where(order => order.LoggerId == 1 && order.UserIsDeleted == false) // TODO: Get the correct logger Id here.
-              .Include(order => order.ShoppingBagItems
+              .Where(order => order.LoggerId.ToString() == httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.SerialNumber) && order.UserIsDeleted == false)
+              .Include(order => order.ShoppingBagItems!
                 .Where(item => item.Status == "Confirmed"))
               .AsNoTracking()
               .ToListAsync();
@@ -75,8 +80,8 @@ namespace HealthyFoodWebsite.Repositories.OrderRepository
 
             var activeOrders = await dbContext
               .Order
-              .Where(order => order.LoggerId == 1 && order.Status == "Active" && order.UserIsDeleted == false) // TODO: Get the correct logger Id here.
-              .Include(order => order.ShoppingBagItems
+              .Where(order => order.LoggerId.ToString() == httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.SerialNumber) && order.Status == "Active" && order.UserIsDeleted == false)
+              .Include(order => order.ShoppingBagItems!
                 .Where(item => item.Status == "Confirmed"))
               .AsNoTracking()
               .ToListAsync();

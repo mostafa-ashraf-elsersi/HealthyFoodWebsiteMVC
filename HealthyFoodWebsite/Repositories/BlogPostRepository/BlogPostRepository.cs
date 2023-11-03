@@ -90,7 +90,7 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
             try
             {
 
-                string? posterUri = await imageUploader.UploadImageToServerAsync(entity.PosterFile, "\\img\\blogPosts\\");
+                string? posterUri = await imageUploader.UploadImageToServerAsync(entity.PosterFile!, "\\img\\blogPosts\\");
                 entity.PosterUri = posterUri;
 
                 await semaphoreSlim.WaitAsync(-1);

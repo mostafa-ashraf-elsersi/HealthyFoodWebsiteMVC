@@ -4,11 +4,11 @@
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
-        <h1 class="display-3 mb-3 animated slideInDown">Contact Us</h1>
+        <h1 class="display-3 mb-3 animated slideInDown" style="color:darkblue">Contact Us</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
-                <li class="breadcrumb-item text-dark active" aria-current="page">Contact Us</li>
+                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item active" style="color:white" aria-current="page">Contact Us</li>
             </ol>
         </nav>
     </div>
@@ -26,10 +26,8 @@
                 <div class="bg-primary text-white d-flex flex-column justify-content-center h-100 p-5">
                     <h5 class="text-white">Call Us</h5>
                     <p class="mb-5"><i class="fa fa-phone-alt me-3"></i>01550012835</p>
-                    <h5 class="text-white">Email Us</h5>
-                    <p class="mb-5"><i class="fa fa-envelope me-3"></i>mostafaashrafelsersi@gmail.com</p>
-                    <h5 class="text-white">Firm Address</h5>
-                    <p class="mb-5"><i class="fa fa-map-marker-alt me-3"></i>Tanta, Gharbyia, Egypt</p>
+                    <h5 class="text-white">Office Address</h5>
+                    <p class="mb-5"><i class="fa fa-map-marker-alt me-3"></i>Gharbyia, Egypt</p>
                     <h5 class="text-white">Follow Me</h5>
                     <div class="d-flex pt-2">
                          <a class="btn btn-square btn-outline-light rounded-circle me-1" href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
@@ -45,24 +43,28 @@
                             <div class="form-floating">
                                 <input asp-for=UserName class="form-control" placeholder="">
                                 <label asp-for=UserName>Your Name</label>
+                                <span asp-validation-for="UserName" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input asp-for=PhoneNumber class="form-control" placeholder="">
-                                <label asp-for=PhoneNumber>Phone Number</label>
+                                <label asp-for=PhoneNumber class="form-label">Phone Number</label>
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-floating">
                                 <input asp-for=Subject class="form-control" placeholder="">
                                 <label asp-for=Subject>Subject</label>
+                                <span asp-validation-for="Subject" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-floating">
                                 <textarea asp-for=Message class="form-control" placeholder="" style="height: 200px"></textarea>
                                 <label asp-for=Message>Your Message</label>
+                                <span asp-validation-for="Message" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-12">
@@ -78,7 +80,7 @@
 <!-- Google Map Start -->
 <div class="container-xxl px-0 wow fadeIn" data-wow-delay="0.1s" style="margin-bottom: -6px;">
     <iframe class="w-100" style="height: 450px;"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d218753.53128313235!2d31.291212446715747!3d31.053433463809288!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14f7777bfe771703%3A0xd1aa28f76e87bc34!2sEl%20Mansoura%2C%20Dakahlia%20Governorate%2C%20Egypt!5e0!3m2!1sen!2sbd!4v1687292463196!5m2!1sen!2sbd"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22932.65999275672!2d31.047071443285507!3d30.741366273085355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14f7cf4d59d90107%3A0x2cd9a6e468c5d252!2sShubra%20QAS%2C%20Shubrabil%20Al%20Kananyah%2C%20El%20Santa%2C%20Gharbia%20Governorate%206651555!5e1!3m2!1sen!2seg!4v1698933635113!5m2!1sen!2seg"
             frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
 </div>
 <!-- Google Map End -->

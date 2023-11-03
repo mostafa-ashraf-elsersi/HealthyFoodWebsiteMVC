@@ -1,11 +1,13 @@
 ﻿using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.BlogRepository;
 using HealthyFoodWebsite.Repositories.TestimonialRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace HealthyFoodWebsite.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         // Object Fields Zone

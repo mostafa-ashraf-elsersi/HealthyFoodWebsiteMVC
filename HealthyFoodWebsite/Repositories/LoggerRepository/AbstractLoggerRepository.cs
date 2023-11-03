@@ -17,9 +17,13 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
 
         // Child Object Methods Zone
         public abstract Task<List<Logger>> GetAllAdminsAsync();
-        
+
+        public abstract Task<Logger?> GetLoggerWithSameUsernameOrNull(string username);
+
+        public abstract Task<bool> CheckSystemLoggerEmailExistence(string emailAddress);
+
         public abstract Task<bool> DeactivateAsync(Logger entity);
         
-        public abstract Task<Logger?> CheckSystemLoggerExistence(string username, string password);
+        public abstract Task<Logger?> CheckSystemLoggerExistenceAsync(string username, string password);
     }
 }
