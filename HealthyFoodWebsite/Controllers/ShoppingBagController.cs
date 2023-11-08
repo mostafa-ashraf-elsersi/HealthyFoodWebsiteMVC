@@ -30,12 +30,24 @@ namespace HealthyFoodWebsite.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<bool> InsertUsingProductAsync(int productId)
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<IActionResult> InsertUsingProductAsync(int productId)
         {
+            var productInsertionResult = 0;
+
             if (User.Identity?.IsAuthenticated == true && User.IsInRole("User"))
-                return await shoppingBagRepository.InsertUsingProductAsync(productId);
-            else
-                return false;
+            {
+                if (await shoppingBagRepository.CheckProductExsitenceInShoppingBagAsync(productId))
+                {
+                    productInsertionResult = 2;
+                }
+                else
+                {
+                    productInsertionResult = await shoppingBagRepository.InsertUsingProductAsync(productId) ? 1 : 0;
+                }
+            }
+           
+            return RedirectToActionPermanentPreserveMethod("GetAll", "Product", new { ProductInsertionResult = productInsertionResult });
         }
 
         [HttpPost]

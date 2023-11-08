@@ -34,7 +34,7 @@ namespace HealthyFoodWebsite.ValidationClasses
                     }
                     else
                     {
-                        return new ValidationResult($"Not allowed file size! Try upload an image within {maxFileSizeInBytes / 1024} MBs.");
+                        return new ValidationResult($"Not allowed file size! Try upload an image within {maxFileSizeInBytes / (1024 * 1024)} MBs.");
                     }
                 }
                 

@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace HealthyFoodWebsite.Controllers
 {
@@ -36,10 +38,12 @@ namespace HealthyFoodWebsite.Controllers
         }
 
 
-        // Login Entrance
+
+        // LOGIN/LOGOUT ZONE
         [AllowAnonymous]
         public IActionResult LogIn()
         {
+            ViewBag.PasswordChanged = -1;
             return View();
         }
 
@@ -70,7 +74,7 @@ namespace HealthyFoodWebsite.Controllers
 
                     var authenticationProperties = new AuthenticationProperties()
                     {
-                        ExpiresUtc = DateTimeOffset.Now.AddDays(1),
+                        ExpiresUtc = DateTimeOffset.Now.AddDays(5),
                         IsPersistent = true
                     };
 
@@ -93,16 +97,19 @@ namespace HealthyFoodWebsite.Controllers
         }
 
         [Authorize(Roles = "BusinessOwner, Admin, User")]
-        public async Task SignOutSystemLoggerAsync()
+        public async Task<IActionResult> SignOutSystemLoggerAsync()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToActionPermanentPreserveMethod("GetView", "Home");
         }
 
 
-        // Insertion Entrance
+
+        // REGISTRATION ZONE
         [AllowAnonymous]
         public IActionResult Register()
         {
+            ViewBag.AccountRegistered = -1;
             return View();
         }
 
@@ -113,15 +120,20 @@ namespace HealthyFoodWebsite.Controllers
         {
             if (ModelState.IsValid)
             {
-                await loggerRepository.InsertAsync(entity);
-                return RedirectToAction("GetView", "Home");
+                if (await loggerRepository.InsertAsync(entity))
+                {
+                    ViewBag.AccountRegistered = 1;
+                    return View("LogIn");
+                }
             }
-            else
-                return View("Register", entity);
+
+            ViewBag.AccountRegistered = 0;
+            return View("Register", entity);
         }
 
 
-        // Update Entrance
+
+        // INFORMATION UPDATE ZONE
         [Authorize(Roles = "BusinessOwner, User")]
         public async Task<IActionResult> UpdateAsync(int id)
         {
@@ -143,7 +155,7 @@ namespace HealthyFoodWebsite.Controllers
         [Authorize(Roles = "BusinessOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> UpdateAsync(Logger entity)
+        public async Task<IActionResult> UpdateAsync(Logger entity)
         {
             if (ModelState.IsValid)
             {
@@ -154,20 +166,47 @@ namespace HealthyFoodWebsite.Controllers
                     entity.Password = loggerAccount.Password;
                 }
 
-                return await loggerRepository.UpdateAsync(entity);
+                if (await loggerRepository.UpdateAsync(entity))
+                {
+                    ViewBag.ProfileUpdated = 1;
+
+                    if (loggerAccount.Role == "Admin")
+                    {
+                        if (loggerAccount.Role != entity.Role)
+                        {
+                            return RedirectToActionPermanentPreserveMethod("GetAllAdmins", "Logger");
+                        }
+                    }
+                }
+                else
+                {
+                    ViewBag.ProfileUpdated = 0;
+                }
             }
-            return false;
+            else
+            {
+                ViewBag.ProfileUpdated = 0;
+            }
+
+            if ((await loggerRepository.GetByIdAsync(entity.Id))!.Role == "Admin")
+            {
+                ViewBag.AccountTypeWord = "Admin";
+                entity.Role = "Admin";
+            }
+
+            return View("EditProfile", entity);
         }
 
 
-        // Password Change Zone
+
+        // PASSWORD CHANGE ZONE
         [Authorize(Roles = "BusinessOwner, User")]
         public IActionResult PasswordChangePortal()
         {
             return View();
         }
 
-        // TODO: Authorization
+        [Authorize(Roles = "BusinessOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PasswordChangePage([Bind("Password")] LoggerCredentialsParameters credentialsParameters)
@@ -180,34 +219,48 @@ namespace HealthyFoodWebsite.Controllers
             }
             else
             {
-                ModelState.AddModelError("InvalidPassword", "Invalid password!");
-                return View("PasswordChangePortal", credentialsParameters);
+                ModelState.AddModelError<LoggerCredentialsParameters>(parameter => parameter.Password, "Invalid password!");
+                return View("PasswordChangePortal");
             }
         }
 
-        // TODO: Commented until the emailing section is fixed.
-        // TODO: Authorization
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<bool> OverwriteOldPasswordWithNewOne([Bind("Password, ConfirmingPassword")] Logger logger)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var _logger = await loggerRepository.GetByIdAsync(1); // TODO: Get the real logger Id here.
+        [Authorize(Roles = "BusinessOwner, User")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OverwriteOldPasswordWithNewOne([Bind("Password, ConfirmingPassword")] Logger logger)
+        {
+            if (logger.Password == logger.ConfirmingPassword)
+            {
+                if (Regex.IsMatch(logger.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"))
+                {
+                    var _logger = await loggerRepository.GetByIdAsync(int.Parse(User.FindFirstValue(ClaimTypes.SerialNumber)!));
 
-        //        _logger!.Password = logger.Password;
-        //    }
-        //}
+                    _logger!.Password = logger.Password;
+
+                    if (await loggerRepository.UpdateAsync(_logger))
+                    {
+                        return RedirectToActionPermanentPreserveMethod("GetView", "Home", new { PasswordChanged = 1 });
+                    }
+                }
+
+                ModelState.AddModelError<Logger>(logger => logger.Password, "An error occurred! Entered password does not go along with the demonstrated password writing rules!");
+            }
+
+            ViewBag.PasswordChanged = 0;
+            ModelState.AddModelError<Logger>(logger => logger.Password, "An error occurred! Entered passwords do not match with each other!");
+            return View("PasswordChangePage");
+        }
 
 
-        // Password Forgetting Zone
+
+        // PASSWORD FORGETTING ZONE
         [AllowAnonymous]
         public IActionResult PasswordForgettingIdentityConfirmationPortal()
         {
             return View();
         }
 
-        // TODO: Authorization
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendEmailWithLinkOfPasswordChangePage([Bind("EmailAddress")] LoggerCredentialsParameters credentialsParameters)
@@ -216,8 +269,17 @@ namespace HealthyFoodWebsite.Controllers
 
             if (isEmailExisted == true)
             {
-                await emailObject.SendEmailWithLinkOfPasswordChangePage(credentialsParameters.EmailAddress);
-                return RedirectToActionPermanent("GetView", "Home");
+                TempData["EmailAddress"] = credentialsParameters.EmailAddress;
+
+                try
+                {
+                    await emailObject.SendEmailWithLinkOfPasswordChangePage(credentialsParameters.EmailAddress);
+                }
+                catch
+                {
+                }
+
+                return View("PasswordChangeEmailSendingNotification");
             }
             else
             {
@@ -226,7 +288,52 @@ namespace HealthyFoodWebsite.Controllers
             }
         }
 
+        [AllowAnonymous]
+        public IActionResult AssignNewPasswordToSystemLogger()
+        {
+            return View("NewPasswordAssigningPage");
+        }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignNewPasswordToSystemLogger([Bind("Password, ConfirmingPassword")] Logger logger)
+        {
+            var emailAddress = TempData["EmailAddress"];
+
+            if (emailAddress != null)
+            {
+                if (logger.Password == logger.ConfirmingPassword)
+                {
+                    if (Regex.IsMatch(logger.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"))
+                    {
+                        var _logger = await loggerRepository.GetLoggerByEmailAddress(emailAddress!.ToString()!);
+
+                        _logger!.Password = logger.Password;
+
+                        await loggerRepository.UpdateAsync(_logger);
+
+                        ViewBag.PasswordChanged = 1;
+
+                        return View("LogIn");
+                    }
+
+                    ModelState.AddModelError<Logger>(logger => logger.Password, "An error occurred! Entered password does not go along with the demonstrated password writing rules!");
+                }
+                else
+                {
+                    ModelState.AddModelError<Logger>(logger => logger.Password, "An error occurred! Entered passwords do not match with each other!");
+                }
+            }
+
+            ViewBag.PasswordChanged = 0;
+
+            return View("LogIn");
+        }
+
+
+
+        // DEACTIVATION AND DELETION ZONE
         [Authorize(Roles = "BusinessOwner")]
         public async Task<bool> DeactivateAsync(int id)
         {

@@ -17,6 +17,16 @@
     }
 </style>
 
+<!-- Password-Changing Alert -->
+@if (ViewBag.PasswordChanged == 1)
+{
+    <div id="password-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closePasswordAlert()"></button>
+        <span style="color: white; text-align: justify;">Password saved successfully!</span>
+    </div>
+}
+<!-- Password-Changing Alert -->
+
 <!-- Carousel Start -->
 <div class="container-fluid p-0 wow fadeIn" data-wow-delay="0.1s">
     <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
@@ -29,7 +39,7 @@
                             <div class="col-lg-7">
                                 <h1 class="display-2 mb-3 animated slideInDown text-dark text-center">Organic Food Is Good For Health</h1>
                                 <div class="text-center w-100">
-                                    <a asp-controller="Product" asp-action="GetProductView" class="btn btn-primary rounded-pill py-3 px-5 fs-6">Our Products</a>
+                                    <a asp-controller="Product" asp-action="GetAll" class="btn btn-primary rounded-pill py-3 px-5 fs-6">Our Products</a>
                                 </div>
                             </div>
                         </div>
@@ -44,7 +54,7 @@
                             <div class="col-lg-7">
                                 <h1 class="display-2 mb-3 animated slideInDown text-dark text-center">Natural Food Is Always Healthy</h1>
                                 <div class="text-center w-100">
-                                    <a asp-controller="Product" asp-action="GetProductView" class="btn btn-primary rounded-pill py-3 px-5 fs-6">Our Products</a>
+                                    <a asp-controller="Product" asp-action="GetAll" class="btn btn-primary rounded-pill py-3 px-5 fs-6">Our Products</a>
                                 </div>
                             </div>
                         </div>
@@ -70,7 +80,7 @@
                 <p><i class="fa fa-check text-primary me-3"></i>Fresh Fruits And Vegetables</p>
                 <p><i class="fa fa-check text-primary me-3"></i>Washed And Packed Carefully</p>
                 <p><i class="fa fa-check text-primary me-3"></i>Affordable Prices</p>
-                <a class="btn btn-primary rounded-pill py-3 px-5 mt-3">Explore Products!</a>
+                <a asp-controller="Product" asp-action="GetAll" class="btn btn-primary rounded-pill py-3 px-5 mt-3">Explore Products!</a>
             </div>
         </div>
     </div>
@@ -118,7 +128,7 @@
                 <p class="text-white mb-0" style="text-align:justify;">Don't hesitate to visit our office, just click the button, fill the form, and wait for a message from us</p>
             </div>
             <div class="col-md-5 text-md-end wow fadeIn" data-wow-delay="0.5s">
-                <a class="btn btn-lg btn-secondary rounded-pill py-3 px-5" asp-controller="ContactUs" asp-action="GetContactUsView">Contact Us Now</a>
+                <a class="btn btn-lg btn-secondary rounded-pill py-3 px-5" asp-controller="ContactUs" asp-action="Insert">Contact Us Now</a>
             </div>
         </div>
     </div>
@@ -166,6 +176,11 @@
 <!-- Blog End -->
 
 <script>
+    function closePasswordAlert() {
+        let alertDiv = document.getElementById("password-alert");
+        alertDiv.classList.add(["d-none"]);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         const ratingStarsContainers = document.getElementsByClassName("rating-stars-containers");
         if (ratingStarsContainers != null) {

@@ -17,7 +17,6 @@
 
                     if (i % itemsPerPage == 0 || i == listedDataCount)
                     {
-
                         pagesList.Add(new List<T>(pageList));
                         pageList.Clear();
                     }

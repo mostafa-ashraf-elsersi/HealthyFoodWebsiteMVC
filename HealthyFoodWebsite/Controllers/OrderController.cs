@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthyFoodWebsite.Controllers
 {
-    [Authorize(Roles = "BusinessOwner, Admin")]
     public class OrderController : Controller
     {
         // Object Fields Zone
@@ -18,25 +17,28 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
+        [Authorize(Roles = "BusinessOwner, Admin")]
         public async Task<IActionResult> GetUsersOrdersAsync()
         {
             ViewBag.UsersInactiveOrders = await orderRepository.GetAdminViewInactiveOrdersAsync();
             return View("Order", await orderRepository.GetAdminViewActiveOrdersAsync());
         }
 
+        [Authorize(Roles = "BusinessOwner, Admin")]
         public async Task<bool> ChangePreparingOrDeliveringToTrue(int id, string mode)
         {
             var entity = await orderRepository.GetByIdAsync(id);
             return await orderRepository.ChangePreparingOrDeliveringToTrue(entity!, mode);
         }
 
+        [Authorize(Roles = "BusinessOwner, Admin")]
         public async Task<bool> SealOrderAsDoneOrCancelled(int id, string status)
         {
             var entity = await orderRepository.GetByIdAsync(id);
             return await orderRepository.SealOrderAsDoneOrCancelled(entity!, status);
         }
 
-        [Authorize(Roles = "BusinessOwner")]
+        [Authorize(Roles = "BusinessOwner, Admin, User")]
         public async Task<bool> PerformUserOrAdminViewDeletionAsync(int id, string view)
         {
             var entity = await orderRepository.GetByIdAsync(id);

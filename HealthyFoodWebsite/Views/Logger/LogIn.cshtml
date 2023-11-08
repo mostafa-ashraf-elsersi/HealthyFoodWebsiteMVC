@@ -1,13 +1,40 @@
 ﻿
 @model LoggerCredentialsParameters
 
+<!-- Password-Changing Alert -->
+@if (ViewBag.PasswordChanged == 1)
+{
+    <div id="password-changing-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closePasswordChangingAlert()"></button>
+        <span style="color: white; text-align: justify;">Password reset successfully!</span>
+    </div>
+}
+else if (ViewBag.PasswordChanged == 0)
+{
+    <div id="password-changing-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closePasswordChangingAlert()"></button>
+        <span style="color: white; text-align: justify;">Error! Try again!</span>
+    </div>
+}
+<!-- Password-Changing Alert -->
+
+<!-- Registration Alert -->
+@if (ViewBag.AccountRegistered == 1)
+{
+    <div id="registration-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeRegistrationAlert()"></button>
+        <span style="color: white; text-align: justify;">Successful registration!</span>
+    </div>
+}
+<!-- Registration Alert -->
+
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
         <h1 class="display-3 mb-3 animated slideInDown" style="color:darkblue">Get Connected</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetView">Home</a></li>
                 <li class="breadcrumb-item active" style="color:white" aria-current="page">Log In</li>
             </ol>
         </nav>
@@ -32,7 +59,10 @@
                                 <label asp-for=Password>Password</label>
                                 <a asp-action="PasswordForgettingIdentityConfirmationPortal">Forget Your Password?</a>
                             </div>
-                            <div asp-validation-summary="All" class="text-danger mb-5"></div>
+                            @if (!(ViewBag.PasswordChanged == 1 || ViewBag.PasswordChanged == 0))
+                            {
+                                <div asp-validation-summary="All" class="text-danger mb-5"></div>                                
+                            }
                             <div class="d-flex justify-content-evenly">
                                 <button type="submit" class="btn btn-primary">Log in</button>
                                 <button type="reset" class="btn btn-secondary">Cancel</button>
@@ -45,3 +75,17 @@
     </div>
 </div>
 <!-- Login Form End -->
+
+@section Scripts {
+    <script>
+        function closePasswordChangingAlert() {
+            let blogSubscriptionAlert = document.getElementById("password-changing-alert");
+            blogSubscriptionAlert.classList.add(["d-none"]);
+        }
+
+        function closeRegistrationAlert() {
+            let blogSubscriptionAlert = document.getElementById("registration-alert");
+            blogSubscriptionAlert.classList.add(["d-none"]);
+        }
+    </script>
+}

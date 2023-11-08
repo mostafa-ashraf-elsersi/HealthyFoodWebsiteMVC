@@ -17,6 +17,7 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
     {
         // Object Fields Zone
         private readonly HealthyFoodDbContext dbContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly AbstractBlogSubscriberRepository blogSubscriberRepository;
         private readonly ImageUploader.ImageUploader imageUploader;
         private readonly EmailFactory emailObject;
@@ -26,11 +27,13 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
 
         // Dependency Injection Zone
         public BlogPostRepository(HealthyFoodDbContext dbContext,
+                                  IHttpContextAccessor httpContextAccessor,
                                   AbstractBlogSubscriberRepository blogSubscriberRepository,
                                   ImageUploader.ImageUploader imageUploader,
                                   EmailFactory emailObject)
         {
             this.dbContext = dbContext;
+            this.httpContextAccessor = httpContextAccessor;
             this.blogSubscriberRepository = blogSubscriberRepository;
             this.imageUploader = imageUploader;
             this.emailObject = emailObject;
@@ -45,7 +48,16 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
             {
                 await semaphoreSlim.WaitAsync(-1);
 
-                var posts = await dbContext.Blog.AsNoTracking().ToListAsync();
+                var posts = httpContextAccessor.HttpContext!.User.IsInRole("BusinessOwner") ?
+                              await dbContext
+                                    .Blog
+                                    .AsNoTracking()
+                                    .ToListAsync() :
+                              await dbContext
+                                    .Blog
+                                    .Where(post => post.IsDisplayed)
+                                    .AsNoTracking()
+                                    .ToListAsync();
 
                 semaphoreSlim.Release();
 
@@ -65,7 +77,12 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
         {
             await semaphoreSlim.WaitAsync(-1);
 
-            var posts = await Task.Run(() => dbContext.Blog.AsEnumerable().TakeLast(3).ToList());
+            var posts = await Task.Run(() => dbContext
+                                                                 .Blog
+                                                                 .Where(post => post.IsDisplayed)
+                                                                 .AsEnumerable()
+                                                                 .TakeLast(3)
+                                                                 .ToList());
 
             semaphoreSlim.Release();
 
@@ -76,9 +93,13 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
         {
             await semaphoreSlim.WaitAsync(-1);
 
-            var post = await dbContext
-                .Blog
-                .FindAsync(id);
+            var post = httpContextAccessor.HttpContext!.User.IsInRole("BusinessOwner") ?
+                              await dbContext
+                                    .Blog
+                                    .FindAsync(id) :
+                              await dbContext
+                                    .Blog
+                                    .FirstOrDefaultAsync(post => post.Id == id && post.IsDisplayed);
 
             semaphoreSlim.Release();
 
@@ -126,7 +147,6 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
                     }
                     catch
                     {
-
                     }
 
                 }));
@@ -156,6 +176,8 @@ namespace HealthyFoodWebsite.Repositories.BlogRepository
                 }
 
                 await semaphoreSlim.WaitAsync(-1);
+
+                dbContext.ChangeTracker.Clear();
 
                 dbContext.Blog.Update(entity);
                 await dbContext.SaveChangesAsync();

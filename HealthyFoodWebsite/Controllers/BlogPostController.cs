@@ -25,16 +25,23 @@ namespace HealthyFoodWebsite.Controllers
             var pagesTuple = await blogRepository.GetPagesWithCountAsync(pageIndex);
 
             ViewBag.PagesCount = pagesTuple.Item2;
+            ViewBag.PostUpdated = 1;
 
             return View("BlogGrid", pagesTuple.Item1);
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> GetBlogPost(int postId)
+        {
+            return View("BlogPostViewer", await blogRepository.GetByIdAsync(postId));
+        }
+
 
         // Insertion Entrance
-        public IActionResult ConfigureBlogPost()
+        public IActionResult InsertAsync()
         {
             ViewBag.ConfigurationStatus = "Add";
-            return View();
+            return View("ConfigureBlogPost");
         }
 
         [HttpPost]
@@ -45,14 +52,25 @@ namespace HealthyFoodWebsite.Controllers
 
             if (entity.PosterFile == null)
             {
+                ViewBag.PostAdded = 0;
                 ModelState.AddModelError<BlogPost>(e => e.PosterFile, "The (Post Poster) field is required.");
                 return View("ConfigureBlogPost", entity);
             }
 
             if (ModelState.IsValid)
             {
-                await blogRepository.InsertAsync(entity);
-                return View("ConfigureBlogPost");
+                if (await blogRepository.InsertAsync(entity))
+                {
+                    ViewBag.PostAdded = 1;
+                }
+                else
+                {
+                    ViewBag.PostAdded = 0;
+                }
+            }
+            else
+            {
+                ViewBag.PostAdded = 0;
             }
 
             return View("ConfigureBlogPost", entity);
@@ -72,13 +90,25 @@ namespace HealthyFoodWebsite.Controllers
         {
             ViewBag.ConfigurationStatus = "Update";
 
+            var targetPost = await blogRepository.GetByIdAsync(entity.Id);
+
             if (ModelState.IsValid)
             {
-                await blogRepository.UpdateAsync(entity);
-                return View("BlogGrid");
+                if (await blogRepository.UpdateAsync(entity))
+                {
+                    return RedirectToActionPermanentPreserveMethod("GetPages", "BlogPost", new { PageIndex = 0 });
+                }
+                else
+                {
+                    ViewBag.PostUpdated = 0;
+                }
+            }
+            else
+            {
+                ViewBag.PostUpdated = 0;
             }
 
-            return View("ConfigureBlogPost", entity);
+            return View("ConfigureBlogPost", targetPost);
         }
 
 
@@ -92,12 +122,6 @@ namespace HealthyFoodWebsite.Controllers
         {
             var entity = await blogRepository.GetByIdAsync(id);
             return await blogRepository.DeleteAsync(entity!);
-        }
-
-        [AllowAnonymous]
-        public async Task<IActionResult> GetBlogPost(int postId)
-        {
-            return View("BlogPostViewer", await blogRepository.GetByIdAsync(postId));
         }
     }
 }

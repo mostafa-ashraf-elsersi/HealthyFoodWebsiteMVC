@@ -2,5 +2,5 @@
 {
     public sealed record EmailModel(
         string FullName,
-        string EmailAddress);
+        string PostTopic);
 }

@@ -14,7 +14,7 @@ namespace HealthyFoodWebsite.Models
         public string PosterUri { get; set; } = string.Empty;
 
         [NotMapped]
-        [FileSizeAndExtensions(1024 * 5, new string[] { ".png", ".jpg" })]
+        [FileSizeAndExtensions(1024 * 1024 * 5, new string[] { ".png", ".jpg" })]
         [DisplayName("(Post Poster)")]
         public IFormFile? PosterFile { get; set; }
 

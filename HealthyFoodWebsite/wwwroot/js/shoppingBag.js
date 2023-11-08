@@ -138,9 +138,9 @@ function appendNewConstructedOrderInActiveOrdersGridToBeTracked(currentOrderId) 
         `
             <div id="tracked-user-active-order-${currentOrderId}" class="tracked-active-orders d-flex justify-content-center align-items-center shadow bg-body-tertiary py-3 mb-4">
 
-                <span>#${newTrackedOrderNumber} |</span>
+                <span class="bg-info p-1 ms-1" style="border-top-left-radius:10px; border-bottom-right-radius:10px;">#${newTrackedOrderNumber}</span>
                                 
-                <span class="fw-bold ms-2 me-3">Order-ID <span>${currentOrderId}</span></span>
+                <span class="fw-bold mx-2">ID-<span>${currentOrderId}</span></span>
 
                 <div class="progress d-inline me-1" style="width: 40%; height: 25px;" role="progressbar" aria-label="Animated striped progress bar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar progress-bar-striped progress-bar-animated fw-bold" style="width: 0%; height: 25px;"></div>
@@ -181,16 +181,13 @@ connection.on("SendOrderIdAsync", async (currentOrderId) => {
 
 connection.on("SendOrderToUserAsync", (currentOrder) => {
 
-    console.log(currentOrder);
-
     const userCardsContainer = document.getElementById("userCardsContainer");
 
     const cardWrapper = document.createElement("div");
     cardWrapper.id = `user-confirmed-order-${currentOrder.orderId}`;
     cardWrapper.classList.add(["card"]);
     cardWrapper.classList.add(["text-start"]);
-    cardWrapper.classList.add(["mb-3"]);
-    cardWrapper.style.width = "40%";
+    cardWrapper.classList.add(["mb-4"]);
 
     const cardBody = document.createElement("div");
     cardBody.classList.add(["card-body"]);
@@ -228,17 +225,19 @@ connection.on("SendOrderToUserAsync", (currentOrder) => {
         <div class="fw-bold text-decoration-underline">Order Details</div>
     </div>
 
-    <table class="table table-hover align-middle">
-        <thead>
-            <tr>
-                <th scope="col">Product Name</th>
-                <th scope="col">Unit Price (EGP)</th>
-                <th scope="col">Quantity (Kg)</th>
-                <th scope="col">Sub-Total (EGP)</th>
-            </tr>
-        </thead>
-        <tbody id="productsTableBody-${currentOrder.orderId}"></tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Unit Price (EGP)</th>
+                    <th scope="col">Quantity (Kg)</th>
+                    <th scope="col">Sub-Total (EGP)</th>
+                </tr>
+            </thead>
+            <tbody id="productsTableBody-${currentOrder.orderId}"></tbody>
+        </table>
+    </div>
 
     <div class="d-flex flex-column justify-content-center">
         <!-- Deletion button trigger modal -->
@@ -414,6 +413,10 @@ async function performUserViewDeletionAsync(orderId) {
                 const targetConfirmedOrderCard = document.getElementById(`user-confirmed-order-${orderId}`);
 
                 targetConfirmedOrderCard.remove();
+
+                const targetTrackedActiveOrder = document.getElementById(`tracked-user-active-order-${orderId}`);
+
+                targetTrackedActiveOrder.remove();
             }
         },
         error: (xhr, status, error) => { }

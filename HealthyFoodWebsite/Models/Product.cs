@@ -15,7 +15,7 @@ namespace HealthyFoodWebsite.Models
 
         [NotMapped]
         [JsonIgnore]
-        [FileSizeAndExtensions(1024 * 5, new string[] { ".png", ".jpg" })]
+        [FileSizeAndExtensions(1024 * 1024 * 5, new string[] { ".png", ".jpg" })]
         [DisplayName("(Product Image)")]
         public IFormFile? ImageFile { get; set; } = null!;
 

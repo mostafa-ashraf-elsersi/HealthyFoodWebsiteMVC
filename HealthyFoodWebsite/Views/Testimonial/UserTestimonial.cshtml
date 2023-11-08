@@ -20,13 +20,30 @@
     </style>
 }
 
+<!-- Testimonial Alert -->
+@if (ViewBag.TestimonialAdded == 1)
+{
+    <div id="testimonial-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeTestimonialAlert()"></button>
+        <span style="color: white; text-align: justify;">Testimonial added successfully!</span>
+    </div>
+}
+else if (ViewBag.TestimonialAdded == 0)
+{
+    <div id="testimonial-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeTestimonialAlert()"></button>
+        <span style="color: white; text-align: justify;">Insertion error! Try again!</span>
+    </div>
+}
+<!-- Testimonial Alert -->
+
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
         <h1 class="display-3 mb-3 animated slideInDown">My Testimonials</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetView">Home</a></li>
                 <li class="breadcrumb-item text-dark active" aria-current="page">My Testimonials</li>
             </ol>
         </nav>
@@ -99,6 +116,11 @@
 
 @section Scripts {
     <script>
+
+        function closeTestimonialAlert() {
+            let blogSubscriptionAlert = document.getElementById("testimonial-alert");
+            blogSubscriptionAlert.classList.add(["d-none"]);
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
             const ratingStarsContainers = document.getElementsByClassName("rating-stars-containers");

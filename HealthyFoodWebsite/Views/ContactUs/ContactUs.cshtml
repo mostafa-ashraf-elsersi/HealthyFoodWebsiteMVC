@@ -1,13 +1,30 @@
 ﻿
 @model CustomerMessage
 
+<!-- ContactUs Alert -->
+@if (ViewBag.MessageSent == 1)
+{
+    <div id="message-sending-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeAlert()"></button>
+        <span style="color: white; text-align: justify;">Message sent successfully!</span>
+    </div>
+}
+else if (ViewBag.MessageSent == 0)
+{
+    <div id="message-sending-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeAlert()"></button>
+        <span style="color: white; text-align: justify;">An error occurred! Try again!</span>
+    </div>
+}
+<!-- ContactUs Alert -->
+
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
         <h1 class="display-3 mb-3 animated slideInDown" style="color:darkblue">Contact Us</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetView">Home</a></li>
                 <li class="breadcrumb-item active" style="color:white" aria-current="page">Contact Us</li>
             </ol>
         </nav>
@@ -30,14 +47,14 @@
                     <p class="mb-5"><i class="fa fa-map-marker-alt me-3"></i>Gharbyia, Egypt</p>
                     <h5 class="text-white">Follow Me</h5>
                     <div class="d-flex pt-2">
-                         <a class="btn btn-square btn-outline-light rounded-circle me-1" href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
-                         <a class="btn btn-square btn-outline-light rounded-circle me-0" href="https://www.linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href="https://www.facebook.com/profile.php?id=100091729882218"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-0" href="https://www.linkedin.com/in/mostafa-ashraf-elsersi"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
             </div>
             <div class="col-lg-7 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
                 <p class="mb-4"></p>
-                <form method="post">
+                <form id="message-form" method="post">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="form-floating">
@@ -84,3 +101,25 @@
             frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
 </div>
 <!-- Google Map End -->
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let messageSendingAlert = document.getElementById("message-sending-alert");
+
+            if (messageSendingAlert !== null) {
+                if (messageSendingAlert.classList.contains("bg-primary") && !messageSendingAlert.classList.contains("d-none")) {
+                    document.getElementById("UserName").value = "";
+                    document.getElementById("PhoneNumber").value = "";
+                    document.getElementById("Subject").value = "";
+                    document.getElementById("Message").value = "";
+                }
+            }
+        });
+
+        function closeAlert() {
+            let blogSubscriptionAlert = document.getElementById("message-sending-alert");
+            blogSubscriptionAlert.classList.add(["d-none"]);
+        }
+    </script>
+}

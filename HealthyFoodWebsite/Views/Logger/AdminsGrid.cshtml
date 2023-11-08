@@ -23,9 +23,9 @@
                 <h1 id="page-main-element-2" class="display-5 @(Model.Count == 0 ? "" : "d-none")">No Registered Admins Yet!</h1>
             </div>
             <br />
-            <div class="row">
+            <div id="page-main-element-3" class="row @(Model.Count == 0 ? "d-none" : "")">
                 <div class="table-responsive">
-                    <table id="page-main-element-3" class="table table-hover align-middle @(Model.Count == 0 ? "d-none" : "")">
+                    <table class="table table-hover align-middle">
                         <thead>
                             <tr>
                                 <th scope="col">Serial Number</th>
@@ -49,11 +49,11 @@
                                         <td>@logger.FullName</td>
                                         <td>@logger.Email</td>
                                         <td>@logger.Username</td>
-                                        <td><input id="password-control" type="password" class="form-control" style="width: 100px;" value="@logger.Password" readonly /></td>
-                                        <td><button class="btn btn-primary" onclick="togglePasswordVisibility(this)"><i class="fa fa-eye-slash"></i></button></td>
+                                        <td><input id="password-control-@logger.Id" type="password" class="form-control" style="width: 100px;" value="@logger.Password" readonly /></td>
+                                        <td><button class="btn btn-primary" onclick="togglePasswordVisibility(@logger.Id, this)"><i class="fa fa-eye-slash"></i></button></td>
                                         <td>@logger.PhoneNumber</td>
                                         <td>@logger.Role</td>
-                                        <td><button class="btn btn-secondary" onclick="deactivateAdminAccount(@logger.Id, this)"><i class="fa @(logger.IsActive == true ? "fa-user-check" : "fa-user-lock")"></i></button></td>
+                                        <td><button title="Activate/Deactivate Account" class="btn btn-secondary" onclick="deactivateAdminAccount(@logger.Id, this)"><i class="fa @(logger.IsActive == true ? "fa-user-check" : "fa-user-lock")"></i></button></td>
                                         <td><a class="btn btn-primary" asp-controller="Logger" asp-action="Update" asp-route-id="@logger.Id">Update</a></td>
                                         <!-- Button trigger modal -->
                                         <td><button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#loggerAccountStaticBackdrop-@logger.Id">Delete</button></td>
@@ -95,9 +95,9 @@
 @section Scripts {
     <script>
         
-        function togglePasswordVisibility(thisElement){
+        function togglePasswordVisibility(id, thisElement){
 
-            const passwordControl = document.getElementById('password-control');
+            const passwordControl = document.getElementById(`password-control-${id}`);
 
             if (passwordControl.type === "password"){
                 passwordControl.type = "text";
@@ -154,13 +154,16 @@
                         const adminAccount = document.getElementById(`admin-account-number-${id}`);
                         adminAccount.remove();
 
-                        const pageFirstMainELement = document.getElementById("page-main-element-1");
-                        const pageSecondMainELement = document.getElementById("page-main-element-2");
                         const pageThirdMainELement = document.getElementById("page-main-element-3");
 
-                        pageFirstMainELement.classList.add(["d-none"]);
-                        pageSecondMainELement.classList.remove(["d-none"]);
-                        pageThirdMainELement.classList.add(["d-none"]);
+                        if (pageThirdMainELement.firstElementChild.firstElementChild.lastElementChild.children.length === 0) {
+                            const pageFirstMainELement = document.getElementById("page-main-element-1");
+                            const pageSecondMainELement = document.getElementById("page-main-element-2");
+
+                            pageFirstMainELement.classList.add(["d-none"]);
+                            pageSecondMainELement.classList.remove(["d-none"]);
+                            pageThirdMainELement.classList.add(["d-none"]);
+                        }
                     }
                 },
                 error: (xhr, status, error) => { }

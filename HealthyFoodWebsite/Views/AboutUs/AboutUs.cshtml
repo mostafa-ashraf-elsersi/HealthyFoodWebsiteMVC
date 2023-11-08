@@ -4,7 +4,7 @@
         <h1 class="display-3 mb-3 animated slideInDown" style="color:darkblue">About Us</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetView">Home</a></li>
                 <li class="breadcrumb-item active" style="color:white" aria-current="page">About Us</li>
             </ol>
         </nav>
@@ -26,7 +26,7 @@
                 <p><i class="fa fa-check text-primary me-3"></i>Fresh Fruits And Vegetables</p>
                 <p><i class="fa fa-check text-primary me-3"></i>Washed And Packed Carefully</p>
                 <p><i class="fa fa-check text-primary me-3"></i>Affordable Prices</p>
-                <a class="btn btn-primary rounded-pill py-3 px-5 mt-3">Explore Products!</a>
+                <a class="btn btn-primary rounded-pill py-3 px-5 mt-3" asp-controller="Product" asp-action="GetAll">Explore Products!</a>
             </div>
         </div>
     </div>
@@ -74,7 +74,7 @@
                 <p class="text-white mb-0" style="text-align:justify;">Don't hesitate to visit our office, just click the button, fill the form, and wait for a message from us</p>
             </div>
             <div class="col-md-5 text-md-end wow fadeIn" data-wow-delay="0.5s">
-                <a class="btn btn-lg btn-secondary rounded-pill py-3 px-5" asp-controller="ContactUs" asp-action="GetContactUsView">Contact Us Now</a>
+                <a class="btn btn-lg btn-secondary rounded-pill py-3 px-5" asp-controller="ContactUs" asp-action="Insert">Contact Us Now</a>
             </div>
         </div>
     </div>

@@ -41,6 +41,23 @@ namespace HealthyFoodWebsite.Repositories.ShoppingBag
             return userItems;
         }
 
+        public override async Task<bool> CheckProductExsitenceInShoppingBagAsync(int productId)
+        {
+            await semaphoreSlim.WaitAsync(-1);
+
+            var product = await productRepository.GetByIdAsync(productId);
+
+            var productExisted = await dbContext
+               .ShoppingBag
+               .AnyAsync(item => item.LoggerId.ToString() == httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.SerialNumber)
+                         && item.Status == "Active"
+                         && item.Name == product!.Name);
+
+            semaphoreSlim.Release();
+
+            return productExisted;
+        }
+
         public override async Task<ShoppingBagItem?> GetByIdAsync(int id)
         {
             await semaphoreSlim.WaitAsync(-1);

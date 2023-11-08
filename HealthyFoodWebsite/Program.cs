@@ -59,13 +59,28 @@ namespace HealthyFoodWebsite
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("Error/GetView");
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/Home/GetNotFoundPage";
+                    await next();
+                }
+            });
 
             app.UseStaticFiles();
 

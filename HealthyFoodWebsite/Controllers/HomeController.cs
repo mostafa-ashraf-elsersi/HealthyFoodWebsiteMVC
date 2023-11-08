@@ -26,10 +26,11 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Object Methods Zone
-        public async Task<IActionResult> GetViewAsync()
+        public async Task<IActionResult> GetViewAsync(int passwordChanged = -1)
         {
             ViewBag.LastThreePosts = await blogPostRepository.GetLastThreePostsAsync();
             ViewBag.TestimonialsList = await testimonialRepository.GetAllAsync();
+            ViewBag.PasswordChanged = passwordChanged;
             return View("Home");
         }
 
@@ -38,6 +39,11 @@ namespace HealthyFoodWebsite.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult GetNotFoundPage()
+        {
+            return View("NotFoundPage");
         }
     }
 }

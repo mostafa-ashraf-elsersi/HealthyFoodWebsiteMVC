@@ -20,17 +20,16 @@ namespace HealthyFoodWebsite.Controllers
 
         // Object Methods Zone
         [AllowAnonymous]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<bool> InsertAsync([Bind("Username, EmailAddress")] BlogSubscriber entity)
+        public async Task<bool> InsertAsync(string emailAddress)
         {
             if (User.Identity?.IsAuthenticated == true && (User.IsInRole("BusinessOwner") || User.IsInRole("User")))
-                if (ModelState.IsValid)
-                    return await blogSubscriberRepository.InsertAsync(entity);
-                else
-                    return false;
+            {
+                return await blogSubscriberRepository.InsertAsync(new BlogSubscriber { UserName = User.FindFirstValue(ClaimTypes.NameIdentifier)!, EmailAddress = emailAddress});
+            }
             else
+            {
                 return false;
+            }
         }
 
         [Authorize(Roles = "BusinessOwner, User")]

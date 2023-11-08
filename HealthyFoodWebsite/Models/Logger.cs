@@ -16,7 +16,7 @@ namespace HealthyFoodWebsite.Models
         public string Username { get; set; } = string.Empty;
 
         [RegularExpression(@"^[A-Z][a-z]{2,}\s[A-Z][a-z]{2,}$",
-           ErrorMessage = "Invalid string format! Write your name of two words, each word has the first letter capitalized, and a minimum length of 3 characters; (e.g., Amr Ayman).")]
+           ErrorMessage = "Invalid string format! Write your name of two words, each word has the first letter capitalized, and a minimum length of 3 characters; (e.g., Mostafa Ashraf).")]
         [DisplayName("(Full Name)")]
         public string FullName { get; set; } = string.Empty;
 

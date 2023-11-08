@@ -1,6 +1,33 @@
 ﻿
 @model Product
 
+<!-- Product-Insertion Alert -->
+@if (ViewBag.ProductAdded == 1)
+{
+    <div id="product-insertion-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeProductInsertionAlert()"></button>
+        <span style="color: white; text-align: justify;">Product added successfully!</span>
+    </div>
+}
+else if (ViewBag.ProductAdded == 0)
+{
+    <div id="product-insertion-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeProductInsertionAlert()"></button>
+        <span style="color: white; text-align: justify;">Error occurred! Product name might be duplicated!</span>
+    </div>
+}
+<!-- Product-Insertion Alert -->
+
+<!-- Product-Update Alert -->
+@if (ViewBag.ProductUpdated == 0)
+{
+    <div id="product-update-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeProductUpdateAlert()"></button>
+        <span style="color: white; text-align: justify;">Error occurred! Product name might be duplicated!</span>
+    </div>
+}
+<!-- Product-Update Alert -->
+
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
@@ -23,7 +50,7 @@
             </div>
             <br />
             <div class="text-start row">
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" id="product-form">
                     <div class="mx-auto mb-4">
                         <!-- Uploaded image area-->
                         <div class="text-start">
@@ -38,7 +65,7 @@
                         <!-- Image input-->
                         <div class="input-group px-2 py-2 bg-white border border-black">
                             <input asp-for=ImageFile accept="image/*" onchange="readURL(this);" class="form-control">
-                            <label id="upload-label" asp-for=ImageFile>Upload Image</label>
+                            <label id="upload-label" asp-for=ImageFile>Click To Upload Image</label>
                             <div id="upload-button" class="input-group-append">
                                 <label asp-for=ImageFile class="btn btn-outline-info m-0 rounded-pill px-4"> <i class="fa fa-upload me-2 text-muted"></i><small class="text-uppercase fw-bold text-muted">Upload Image</small></label>
                             </div>
@@ -78,3 +105,36 @@
     </div>
 </div>
 <!-- Product Upload End -->
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let productInsertionAlert = document.getElementById("product-insertion-alert");
+
+            if (productInsertionAlert !== null) {
+                if (productInsertionAlert.classList.contains("bg-primary") && !productInsertionAlert.classList.contains("d-none")) {
+                    document.getElementById("Name").value = "";
+                    document.getElementById("Price").value = "";
+
+                    let categorySelectionElementChilds = document.getElementById("Category").children;
+                    Array.from(categorySelectionElementChilds).forEach((element, index) => {
+                        if (index != 0)
+                            element.removeAttribute("selected")
+                    });
+
+                    document.getElementById("IsDisplayed").removeAttribute("checked");
+                }
+            }
+        });
+
+        function closeProductInsertionAlert() {
+            let alertDiv = document.getElementById("product-insertion-alert");
+            alertDiv.classList.add(["d-none"]);
+        }
+
+        function closeProductUpdateAlert() {
+            let alertDiv = document.getElementById("product-update-alert");
+            alertDiv.classList.add(["d-none"]);
+        }
+    </script>
+}

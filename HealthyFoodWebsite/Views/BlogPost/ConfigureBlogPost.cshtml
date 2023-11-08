@@ -42,9 +42,37 @@
         .poster-area img {
             z-index: 2;
             position: relative;
+            max-width: 50%;
         }
     </style>
 }
+
+<!-- Post-Insertion Alert -->
+@if (ViewBag.PostAdded == 1)
+{
+    <div id="post-insertion-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closePostInsertionAlert()"></button>
+        <span style="color: white; text-align: justify;">Post added successfully!</span>
+    </div>
+}
+else if (ViewBag.PostAdded == 0)
+{
+    <div id="post-insertion-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closePostInsertionAlert()"></button>
+        <span style="color: white; text-align: justify;">Error occurred! Post title might be duplicated!</span>
+    </div>
+}
+<!-- Post-Insertion Alert -->
+
+<!-- Post-Update Alert -->
+@if (ViewBag.PostUpdated == 0)
+{
+    <div id="post-update-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closePostUpdateAlert()"></button>
+        <span style="color: white; text-align: justify;">Error occurred! Post title might be duplicated!</span>
+    </div>
+}
+<!-- Post-Update Alert -->
 
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
@@ -52,7 +80,7 @@
         <h1 class="display-3 mb-3 animated slideInDown">Blog Post Configuration</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetView">Home</a></li>
                 <li class="breadcrumb-item text-dark active" aria-current="page">@ViewBag.ConfigurationStatus Blog Post</li>
             </ol>
         </nav>
@@ -60,7 +88,7 @@
 </div>
 <!-- Page Header End -->
 <!-- Product Upload Start -->
-<div class="container-fluid bg-light bg-icon py-6 mb-0">
+<div class="container-fluid bg-light bg-icon py-6">
     <div class="container">
         <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
             <div>
@@ -68,7 +96,7 @@
             </div>
             <br />
             <div class="text-start row">
-                <form asp-action="Insert" method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data">
                     <div class="mx-auto mb-4">
                         <!-- Uploaded image area-->
                         <div class="text-start">
@@ -83,7 +111,7 @@
                         <!-- Image upload input-->
                         <div class="input-group px-2 py-2 bg-white border border-black">
                             <input asp-for=PosterFile accept="image/*" onchange="readURL(this);" class="form-control">
-                            <label id="post-upload-label" asp-for=PosterFile>Upload Poster</label>
+                            <label id="post-upload-label" asp-for=PosterFile>Click To Upload Poster</label>
                             <div id="poster-upload-button" class="input-group-append">
                                 <label asp-for=PosterFile class="btn btn-outline-info m-0 rounded-pill px-4"> <i class="fa fa-upload me-2 text-muted"></i><small class="text-uppercase fw-bold text-muted">Upload Image</small></label>
                             </div>
@@ -92,7 +120,7 @@
                     </div>
                     <div class="form-floating mb-4">
                         <input asp-for=Title class="form-control" placeholder="">
-                        <label asp-for=Title>Name</label>
+                        <label asp-for=Title>Title</label>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-4">
@@ -103,6 +131,7 @@
                     <div class="mb-4">
                         <select asp-for=AuthorType class="form-select py-3" aria-label="Select Author Role">
                             <option value="ChooseAuthorType" selected>Choose Author Type...</option>
+                            <option value="BusinessOwner">Business Owner</option>
                             <option value="Admin">Admin</option>
                         </select>
                         <span asp-validation-for="AuthorType" class="text-danger"></span>
@@ -122,8 +151,39 @@
 </div>
 <!-- Product Upload End -->
 
+
+
 @section Scripts {
     <script>
+        $(document).ready(function () {
+            let postInsertionAlert = document.getElementById("post-insertion-alert");
+
+            if (postInsertionAlert !== null) {
+                if (postInsertionAlert.classList.contains("bg-primary") && !postInsertionAlert.classList.contains("d-none")) {
+                    document.getElementById("Title").value = "";
+                    document.getElementById("Content").value = "";
+
+                    let authorTypeSelectionElementChilds = document.getElementById("AuthorType").children;
+                    Array.from(authorTypeSelectionElementChilds).forEach((element, index) => {
+                        if (index != 0)
+                            element.removeAttribute("selected")
+                    });
+
+                    document.getElementById("IsDisplayed").removeAttribute("checked");
+                }
+            }
+        });
+
+        function closePostInsertionAlert() {
+            let alertDiv = document.getElementById("post-insertion-alert");
+            alertDiv.classList.add(["d-none"]);
+        }
+
+        function closePostUpdateAlert() {
+            let alertDiv = document.getElementById("post-update-alert");
+            alertDiv.classList.add(["d-none"]);
+        }
+
         /*  ==========================================
         SHOW UPLOADED IMAGE
         * ========================================== */

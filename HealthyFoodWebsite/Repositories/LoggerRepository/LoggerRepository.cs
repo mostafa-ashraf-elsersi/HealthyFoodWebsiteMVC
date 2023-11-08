@@ -59,6 +59,21 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
             return isEmailExisted;
         }
 
+        public override async Task<Logger?> GetLoggerByEmailAddress(string emailAddress)
+        {
+            await semaphoreSlim.WaitAsync(-1);
+
+            var logger = await dbContext
+                .Logger
+                .Where(logger => logger.Email == emailAddress)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            semaphoreSlim.Release();
+
+            return logger;
+        }
+
         public override async Task<Logger?> GetByIdAsync(int id)
         {
             await semaphoreSlim.WaitAsync(-1);
@@ -113,6 +128,8 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
                     entity.IsActive = true;
 
                 await semaphoreSlim.WaitAsync(-1);
+
+                dbContext.ChangeTracker.Clear();
 
                 dbContext.Logger.Update(entity);
                 await dbContext.SaveChangesAsync();

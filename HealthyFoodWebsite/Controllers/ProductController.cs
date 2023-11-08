@@ -1,5 +1,4 @@
-﻿using HealthyFoodWebsite.Controllers.IController;
-using HealthyFoodWebsite.Models;
+﻿using HealthyFoodWebsite.Models;
 using HealthyFoodWebsite.Repositories.ProductRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +20,18 @@ namespace HealthyFoodWebsite.Controllers
 
         // Object Methods Zone
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(int productInsertionResult = -1)
         {
+            if (User.Identity?.IsAuthenticated == true && productInsertionResult >= 0)
+            {
+                ViewBag.ProcessSuccessful = productInsertionResult;
+            }
+
+            if (productInsertionResult == -1)
+            {
+                ViewBag.ProcessSuccessful = -1;
+            }
+
             return View("Product", await productRepository.GetAllAsync());
         }
 
@@ -48,14 +57,25 @@ namespace HealthyFoodWebsite.Controllers
 
             if (entity.ImageFile == null)
             {
+                ViewBag.ProductAdded = 0;
                 ModelState.AddModelError<Product>(e => e.ImageFile, "The (Product Image) field is required.");
                 return View("ConfigureProduct", entity);
             }
 
             if (ModelState.IsValid)
             {
-                await productRepository.InsertAsync(entity);
-                return View("ConfigureProduct");
+                if (await productRepository.InsertAsync(entity))
+                {
+                    ViewBag.ProductAdded = 1;
+                }
+                else
+                {
+                    ViewBag.ProductAdded = 0;
+                }
+            }
+            else
+            {
+                ViewBag.ProductAdded = 0;
             }
 
             return View("ConfigureProduct", entity);
@@ -75,13 +95,26 @@ namespace HealthyFoodWebsite.Controllers
         {
             ViewBag.ConfigurationStatus = "Update";
 
+            var targetProduct = await productRepository.GetByIdAsync(entity.Id);
+
             if (ModelState.IsValid)
             {
-                await productRepository.UpdateAsync(entity);
-                return View("Product");
+                if (await productRepository.UpdateAsync(entity))
+                {
+                    ViewBag.ProductUpdated = 1;
+                    return View("Product", await productRepository.GetAllAsync());
+                }
+                else
+                {
+                    ViewBag.ProductUpdated = 0;
+                }
+            }
+            else
+            {
+                ViewBag.ProductUpdated = 0;
             }
 
-            return View("ConfigureProduct", entity);
+            return View("ConfigureProduct", targetProduct);
         }
 
 

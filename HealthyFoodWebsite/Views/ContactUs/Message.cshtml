@@ -15,14 +15,15 @@
 </div>
 <!-- Page Header End -->
 <!-- Feature Start -->
-<div class="container-fluid bg-light bg-icon py-6 mb-0">
+<div class="container-fluid bg-light bg-icon py-6">
     <div class="container">
-        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
+        <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1500px;">
             <div>
-                <h1 class="display-5">See Customers Messages</h1>
+                <h1 id="page-main-element-1" class="display-5 @(Model.Count == 0 ? "d-none" : "")">See Customers Messages</h1>
+                <h1 id="page-main-element-2" class="display-5 @(Model.Count > 0 ? "d-none" : "")">No Customers Messages Yet!</h1>
             </div>
             <br />
-            <div class="text-center row">
+            <div id="page-main-element-3" class="text-center row @(Model.Count == 0 ? "d-none" : "")">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead>
@@ -32,7 +33,10 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">Subject</th>
                                 <th scope="col">Message</th>
-                                <th scope="col">Action</th>
+                                @if (User.IsInRole("BusinessOwner"))
+                                {
+                                    <th scope="col">Action</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -99,6 +103,17 @@
                     if (result == true) {
                         const deletedProduct = document.getElementById(`message-number-${id}`);
                         deletedProduct.remove();
+
+                        const pageThirdMainELement = document.getElementById("page-main-element-3");
+
+                        if (pageThirdMainELement.firstElementChild.firstElementChild.lastElementChild.children.length === 0) {
+                            const pageFirstMainELement = document.getElementById("page-main-element-1");
+                            const pageSecondMainELement = document.getElementById("page-main-element-2");
+
+                            pageFirstMainELement.classList.add(["d-none"]);
+                            pageSecondMainELement.classList.remove(["d-none"]);
+                            pageThirdMainELement.classList.add(["d-none"]);
+                        }
                     }
                 },
                 error: (xhr, status, error) => { }

@@ -22,6 +22,8 @@ namespace HealthyFoodWebsite.Repositories.LoggerRepository
 
         public abstract Task<bool> CheckSystemLoggerEmailExistence(string emailAddress);
 
+        public abstract Task<Logger?> GetLoggerByEmailAddress(string emailAddress);
+
         public abstract Task<bool> DeactivateAsync(Logger entity);
         
         public abstract Task<Logger?> CheckSystemLoggerExistenceAsync(string username, string password);

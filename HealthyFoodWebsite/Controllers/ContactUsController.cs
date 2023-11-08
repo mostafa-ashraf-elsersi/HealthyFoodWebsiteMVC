@@ -25,21 +25,29 @@ namespace HealthyFoodWebsite.Controllers
 
 
         // Insertion Entrance
-        [AllowAnonymous, Authorize(Roles = "User")]
+        [AllowAnonymous]
         public IActionResult InsertAsync()
         {
+            ViewBag.MessageSent = -1;
             return View("ContactUs");
         }
 
-        [AllowAnonymous, Authorize(Roles = "User")]
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> InsertAsync([Bind("UserName, PhoneNumber, Subject, Message")] CustomerMessage entity)
+        public async Task<IActionResult> InsertAsync([Bind("UserName, PhoneNumber, Subject, Message")] CustomerMessage entity)
         {
             if (ModelState.IsValid)
-                return await contactUsRepository.InsertAsync(entity);
-            else
-                return false;
+            {
+                if (await contactUsRepository.InsertAsync(entity))
+                {
+                    ViewBag.MessageSent = 1;
+                    return View("ContactUs");
+                }
+            }
+
+            ViewBag.MessageSent = 0;
+            return View("ContactUs");
         }
 
 

@@ -1,19 +1,37 @@
 ﻿@model Logger
 
+<!-- Profile-Update Alert -->
+@if (ViewBag.ProfileUpdated == 1)
+{
+    <div id="profile-update-alert" class="alert alert-dismissible fixed-bottom bg-primary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeProfileAlert()"></button>
+        <span style="color: white; text-align: justify;">Profile updated successfully!</span>
+    </div>
+}
+else if (ViewBag.ProfileUpdated == 0)
+{
+    <div id="profile-update-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeProfileAlert()"></button>
+        <span style="color: white; text-align: justify;">Error occurred! Try again!</span>
+    </div>
+}
+<!-- Profile-Update Alert -->
+
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
         <h1 class="display-3 mb-3 animated slideInDown">Edit Profile</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetHomeView">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetView">Home</a></li>
                 <li class="breadcrumb-item text-dark active" aria-current="page">Edit Profile</li>
             </ol>
         </nav>
     </div>
 </div>
 <!-- Page Header End -->
-<!-- Login Form Start -->
+
+<!-- Profile-Update Form Start -->
 <div class="container-fluid bg-light bg-icon py-5 mb-0">
 
     <div class="container">
@@ -22,7 +40,7 @@
                 <h1 id="page-main-element-1" class="display-5">Update @ViewBag.AccountTypeWord Profile</h1>
             </div>
             <br />
-            <form method="post" class="text-start">
+            <form method="post" class="text-start" onsubmit="return confirmForm()">
                 <div class="form-floating mb-4">
                     <input asp-for=FullName class="form-control" placeholder="">
                     <label asp-for=FullName>Full Name</label>
@@ -56,30 +74,48 @@
                     <label asp-for=PhoneNumber>Phone Number</label>
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
-                <div class="mb-4">
-                    <select class="form-select" style="height: 60px;" id="role" aria-label="Choose Role" asp-for=Role>
-                        <option value="ChooseARole" selected>Choose a role...</option>
-                        <option value="BusinessOwner">Business Owner</option>
-                        <option value="Admin">Admin</option>
-                        <option value="User">User</option>
-                    </select>
-                    <span asp-validation-for="Role" class="text-danger"></span>
-                </div>
+                @if (User.IsInRole("BusinessOwner"))
+                {
+                    <div>
+                        <select class="form-select" style="height: 60px;" id="role" aria-label="Choose Role" asp-for=Role>
+                            <option value="ChooseARole" selected>Choose a role...</option>
+                            <option value="BusinessOwner">Business Owner</option>
+                            <option value="Admin">Admin</option>
+                            <option value="User">User</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+                    @if (Model.Role != "Admin")
+                    {
+                        <div class="mb-4" style="text-align: justify;">
+                            <em>* Updating this field won't take actual effect until you sign out and re-sign in the system.</em>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-4" style="text-align: justify;">
+                            <em>* Updating this field is irreversible, you'll be hence redirected to admins grid.</em>
+                        </div>
+                    }
+                }
                 <div class="d-flex justify-content-evenly">
                     <button type="submit" class="btn btn-primary">Update</button>
                     <button type="reset" class="btn btn-secondary">Cancel</button>
                 </div>
             </form>
 
-            <div class="d-flex flex-column my-5 pt-4 border-top">
-                <a class="btn btn-secondary py-2" asp-controller="Logger" asp-action="PasswordChangePortal">Change Your Password</a>
-            </div>
+            @if (Model.Role != "Admin")
+            {
+                <div class="d-flex flex-column my-5 pt-4 border-top">
+                    <a class="btn btn-secondary py-2" asp-controller="Logger" asp-action="PasswordChangePortal">Change Your Password</a>
+                </div>
+            }
 
             @if (ViewBag.HasBlogSubscriptions == true)
             {
                 <div id="subscriptions-cancellation-button" class="d-flex flex-column my-5 pt-4 border-top">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-danger py-2" data-bs-toggle="modal" data-bs-target="#cancelSubscriptionsStaticBackdrop">Cancel Blog Posts Subscription</button>
+                    <button type="button" class="btn btn-danger py-2" data-bs-toggle="modal" data-bs-target="#cancelSubscriptionsStaticBackdrop">Cancel All Blog Subscriptions</button>
                 </div>
 
                 <!-- Modal -->
@@ -109,10 +145,29 @@
     </div>
 
 </div>
-<!-- Login Form End -->
+<!-- Profile-Update Form End -->
 
 @section Scripts {
     <script>
+        
+        $(document).ready(() => {
+            let usernameField = document.getElementById("Username");
+            usernameField.setAttribute("readonly", "");
+        });
+
+        function confirmForm(){
+            if (document.getElementById("Username").hasAttribute("readonly")) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        function closeProfileAlert() {
+            let alertDiv = document.getElementById("profile-update-alert");
+            alertDiv.classList.add(["d-none"]);
+        }
 
         async function cancelSubscriptionsAsync(){
             $.support.cors = true;

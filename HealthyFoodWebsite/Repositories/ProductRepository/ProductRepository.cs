@@ -64,7 +64,7 @@ namespace HealthyFoodWebsite.Repositories.ProductRepository
         {
             try
             {
-                var imageUri = await imageUploader.UploadImageToServerAsync(entity.ImageFile, "\\img\\products\\");
+                var imageUri = await imageUploader.UploadImageToServerAsync(entity.ImageFile!, "\\img\\products\\");
                 entity.ImageUri = imageUri;
 
                 await semaphoreSlim.WaitAsync(-1);
@@ -96,6 +96,8 @@ namespace HealthyFoodWebsite.Repositories.ProductRepository
                 }
 
                 await semaphoreSlim.WaitAsync(-1);
+
+                dbContext.ChangeTracker.Clear();
 
                 dbContext.Product.Update(entity);
                 await dbContext.SaveChangesAsync();

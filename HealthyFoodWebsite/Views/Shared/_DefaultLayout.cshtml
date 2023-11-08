@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>HealthyFood - Organic Food Website</title>
+    <title>Taعamona | Organic Fruits And Vegetables</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -42,6 +42,13 @@
     </div>
     <!-- Spinner End -->
 
+    <!-- Blog Subscription Alert -->
+    <div id="blog-subscription-alert" class="alert alert-dismissible fixed-bottom bg-primary d-none" style="margin-left: 10px; max-width: 300px; z-index: 100;">
+        <button type="button" class="btn-close" onclick="closeBlogSubscriptionAlert()"></button>
+        <span style="color: white; text-align: justify;"></span>
+    </div>
+    <!-- Blog Subscription Alert -->
+
     <header>
         <!-- Navbar Start -->
         <div class="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
@@ -59,8 +66,8 @@
             </div>
 
             <nav class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
-                <a href="#" class="navbar-brand ms-4 ms-lg-0">
-                    <h1 class="fw-bold text-primary ms-0 ms-lg-5">Healthy<span class="text-secondary">Food</span></h1>
+                <a href="#" class="navbar-brand ms-lg-0">
+                    <img class="ms-0 ms-lg-5" src="~/img/Taعamona-logo.png" alt="website-logo" style="width: 60%;" />
                 </a>
                 <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
@@ -91,11 +98,6 @@
                             <a asp-controller="Product" asp-action="GetAll" class="nav-item nav-link">Products</a>
                         }
 
-                        @if (User.IsInRole("BusinessOwner") || User.IsInRole("Admin"))
-                        {
-                            <a asp-controller="ContactUs" asp-action="GetAll" class="nav-item nav-link">Messages</a>
-                        }
-
                         <!-- Dropdown Menu -->
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
@@ -104,7 +106,7 @@
                                 {
                                     <a asp-controller="Testimonial" asp-action="GetAll" class="dropdown-item">Testimonials</a>
                                     
-                                    <a asp-controller="BlogPost" asp-action="ConfigureBlogPost" class="dropdown-item">Add Blog Post</a>
+                                    <a asp-controller="BlogPost" asp-action="Insert" class="dropdown-item">Add Blog Post</a>
                                 }
 
                                 @if (User.IsInRole("User"))
@@ -116,6 +118,11 @@
                                 <a asp-controller="BlogPost" asp-action="GetPages" asp-route-pageIndex=0 class="dropdown-item">Blog Grid</a>
                             </div>
                         </div>
+
+                        @if (User.IsInRole("BusinessOwner") || User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="ContactUs" asp-action="GetAll" class="nav-item nav-link">Messages</a>
+                        }
 
                         @if (!(User.IsInRole("BusinessOwner") || User.IsInRole("Admin")))
                         {
@@ -155,12 +162,13 @@
 
                                 @if (User.IsInRole("BusinessOwner"))
                                 {
-                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="GetAllAdmins">Sys. Admins</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="Register">Register Person</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="GetAllAdmins">System Admins</a></li>
                                 }
 
                                 @if (User.IsInRole("BusinessOwner") || User.IsInRole("User"))
                                 {
-                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="Update" asp-route-id="1">My Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Logger" asp-action="Update" asp-route-id="@User.Claims.ToList().ElementAt(0).ToString().Split(":")[2].Trim()">My Profile</a></li>
                                 }
                             </ul>
                         </div>
@@ -207,10 +215,10 @@
                     <div class="col-12 mb-4 col-md-6 mb-md-0 col-lg-4">
                         <h4 class="text-light mb-4">Blog Posts Letter</h4>
                         <p style="text-align:justify">Subscribe in my blog posts letter service to get notifications considering latest published posts.</p>
-                        <form asp-controller="BlogSubscriber" asp-action="Insert" method="post">
+                        <form onsubmit="return false;">
                             <div class="position-relative mx-auto d-flex justify-content-start" style="max-width: 400px;">
-                                <input type="email" class="form-control bg-transparent w-100 py-3 ps-4 pe-5" placeholder="Email" name="EmailAddress" required/>
-                                <button type="submit" class="btn btn-primary py-2 ms-2">Subscribe</button>
+                                <input id="blog-subscription-email-field" type="email" class="form-control bg-transparent w-100 py-3 ps-4 pe-5" placeholder="Email" required />
+                                <button type="submit" class="btn btn-primary py-2 ms-2" onclick="InsertBlogSubscriber()">Subscribe</button>
                             </div>
                         </form>
                     </div>
@@ -255,6 +263,45 @@
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
     @await RenderSectionAsync("ShoppingBagScript", required: false)
     @await RenderSectionAsync("OrderScript", required: false)
+
+    <!-- Footer JS -->
+    <script>
+        function closeBlogSubscriptionAlert() {
+            let blogSubscriptionAlert = document.getElementById("blog-subscription-alert");
+            blogSubscriptionAlert.classList.add(["d-none"]);
+        }
+
+        async function InsertBlogSubscriber() {
+            let emailAddress = document.getElementById("blog-subscription-email-field").value;
+
+            $.support.cors = true;
+            await $.ajax({
+                url: `/BlogSubscriber/Insert?emailAddress=${emailAddress}`,
+                type: "GET",
+                cache: false,
+                success: (result, status, xhr) => {
+                    let blogSubscriptionAlert = document.getElementById("blog-subscription-alert");
+
+                    if (result == true) {
+                        blogSubscriptionAlert.lastElementChild.textContent = `Successful blog subscription!`;
+                        blogSubscriptionAlert.classList.remove(["d-none"]);
+                    }
+                    else {
+                        blogSubscriptionAlert.classList.remove(["bg-primary"]);
+                        blogSubscriptionAlert.classList.add(["bg-secondary"])
+                        blogSubscriptionAlert.lastElementChild.textContent = `An error occurred! Log in first if you have not, then try again!`;
+                        blogSubscriptionAlert.classList.remove(["d-none"]);
+                    }
+                },
+                error: (xhr, status, error) => { 
+                    blogSubscriptionAlert.classList.remove(["bg-primary"]);
+                    blogSubscriptionAlert.classList.add(["bg-secondary"])
+                    blogSubscriptionAlert.lastElementChild.textContent = `An error occurred! Try again!`;
+                    blogSubscriptionAlert.classList.remove(["d-none"]);
+                }
+            });
+        }
+    </script>
 
     <!-- Rendered Body JavaScript-->
     @await RenderSectionAsync("Scripts", required: false)
