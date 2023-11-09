@@ -37,7 +37,7 @@
                     <div class="container">
                         <div class="row justify-content-start">
                             <div class="col-lg-7">
-                                <h1 class="display-2 mb-3 animated slideInDown text-dark text-center">Organic Food Is Good For Health</h1>
+                                <h1 class="display-2 mb-3 animated slideInDown text-dark text-center">Wants Healthy Food ? Try Organic!</h1>
                                 <div class="text-center w-100">
                                     <a asp-controller="Product" asp-action="GetAll" class="btn btn-primary rounded-pill py-3 px-5 fs-6">Our Products</a>
                                 </div>
@@ -66,16 +66,16 @@
 </div>
 <!-- Carousel End -->
 <!-- About Start -->
-<div class="container-xxl py-5">
+<div class="container-xxl py-6">
     <div class="container">
         <div class="row g-5 align-items-center">
             <div class="col-md-5 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
                 <div class="about-img position-relative overflow-hidden w-100 p-2">
-                    <img class="img-fluid w-100" style="border-radius: 10px" src="~/img/my-photo.jpg">
+                    <img class="img-fluid w-100" style="border-radius: 10px" src="~/img/my-photo.jpg" alt="mostafa's ashraf image">
                 </div>
             </div>
             <div class="col-md-7 col-lg-8 wow fadeIn" data-wow-delay="0.5s">
-                <h1 class="display-6 mb-4">Best Organic Fruits And Vegetables</h1>
+                <h1 class="display-6 mb-4">Best Organic Fruits And Vegetables!</h1>
                 <p class="mb-4">Start Your Order Now!</p>
                 <p><i class="fa fa-check text-primary me-3"></i>Fresh Fruits And Vegetables</p>
                 <p><i class="fa fa-check text-primary me-3"></i>Washed And Packed Carefully</p>
@@ -91,28 +91,28 @@
     <div class="container">
         <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
             <h1 class="display-5 mb-3">Our Features</h1>
-            <p>Products are featured by</p>
+            <p>Products Are Featured By</p>
         </div>
         <div class="row g-4">
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                 <div class="bg-white text-center h-100 p-4 p-xl-5">
                     <img class="img-fluid mb-4" src="~/img/icon-1.png" alt="">
                     <h4 class="mb-3">Natural Process</h4>
-                    <p class="mb-4">Products are 100% natural</p>
+                    <p class="mb-4">Products Are 100% Natural</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                 <div class="bg-white text-center h-100 p-4 p-xl-5">
                     <img class="img-fluid mb-4" src="~/img/icon-2.png" alt="">
                     <h4 class="mb-3">Affordable Prices</h4>
-                    <p class="mb-4">Products are affordable, despite high quality</p>
+                    <p class="mb-4">Affordable High-Quality Products</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
                 <div class="bg-white text-center h-100 p-4 p-xl-5">
                     <img class="img-fluid mb-4" src="~/img/icon-3.png" alt="">
                     <h4 class="mb-3">Biologically Safe</h4>
-                    <p class="mb-4">Products are biologically safe</p>
+                    <p class="mb-4">No Chemical Fertilizers, Just Natural!</p>
                 </div>
             </div>
         </div>
@@ -125,7 +125,7 @@
         <div class="row g-5 align-items-center">
             <div class="col-md-7 wow fadeIn" data-wow-delay="0.1s">
                 <h1 class="display-5 text-white mb-3">Visit Our Office</h1>
-                <p class="text-white mb-0" style="text-align:justify;">Don't hesitate to visit our office, just click the button, fill the form, and wait for a message from us</p>
+                <p class="text-white mb-0" style="text-align:justify;">Don't hesitate to visit our office, just click the button, fill the form, and wait for a message from us!</p>
             </div>
             <div class="col-md-5 text-md-end wow fadeIn" data-wow-delay="0.5s">
                 <a class="btn btn-lg btn-secondary rounded-pill py-3 px-5" asp-controller="ContactUs" asp-action="Insert">Contact Us Now</a>
@@ -139,7 +139,7 @@
     <div class="container">
         <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
             <h1 class="display-5 mb-3">Customer Review</h1>
-            <p>Check the customers reviews</p>
+            <p>Check Customers Reviews</p>
         </div>
         <partial name="_TestimonialsListPartial" model="ViewBag.TestimonialsList">
     </div>
@@ -150,7 +150,7 @@
     <div class="container">
         <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
             <h1 class="display-5 mb-3">Latest Blog Posts</h1>
-            <p>Check our latest posts on the website</p>
+            <p>Check Our Latest Posts On The Website</p>
         </div>
         <div class="row g-4">
             @{
@@ -159,7 +159,7 @@
                 foreach(var post in posts)
                 {
                     <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <a asp-controller="BlogPost" asp-action="GetBlogPost" asp-route-postId="@post.Id"><img class="img-fluid" src="@post.PosterUri" alt=""></a>
+                        <a asp-controller="BlogPost" asp-action="GetBlogPost" asp-route-postId="@post.Id"><img class="img-fluid" src="@post.PosterUri" alt="post poster"></a>
                         <div class="bg-light p-4">
                             <a class="d-block h5 lh-base mb-4" asp-controller="BlogPost" asp-action="GetBlogPost" asp-route-postId="@post.Id">@post.Title</a>
                             <div class="d-flex justify-content-between text-muted border-top pt-4">

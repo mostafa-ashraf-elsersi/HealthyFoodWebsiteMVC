@@ -3,13 +3,13 @@
 
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
-    <div class="container">
+    <div class="container d-none d-md-block">
         <h1 class="display-3 mb-3 animated slideInDown">Blog Post Viewer</h1>
     </div>
 </div>
 <!-- Page Header End -->
 <!-- Feature Start -->
-<div class="container-fluid bg-light bg-icon py-6 mb-0">
+<div class="container-fluid bg-light bg-icon py-6">
     <div class="container">
         <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1500px;">
             <div>
@@ -17,15 +17,15 @@
             </div>
             <br />
             <div class="text-center row">
-                <img src="@Model.PosterUri" alt="A blog post poster." class="rounded mb-3 mx-auto"/>
-                <div class="d-flex justify-content-between text-muted border-bottom mb-3 pb-3">
+                <img src="@Model.PosterUri" alt="A blog post poster" style="border-top-left-radius: 50px; border-bottom-right-radius: 50px;" class="w-50 mb-3 mx-auto" />
+                <div class="d-flex justify-content-between text-muted border-bottom pb-3">
                     <small class="me-3"><i class="fa fa-user text-primary me-2"></i>@Model.AuthorType</small>
                     <small class="me-3"><i class="fa fa-calendar text-primary me-2"></i>@Model.PublishingDate</small>
                 </div>
-                <div class="text-start">
+                <div class="text-start mt-4 mb-3">
                     <h4>@Model.Title</h4>
                 </div>
-                <textarea class="form-control cols-sm-6" style="resize: none;" readonly>@Model.Content</textarea>
+                <textarea class="form-control cols-sm-6" style="resize: none; border-top-left-radius: 20px; border-bottom-right-radius: 20px;" readonly>@Model.Content</textarea>
             </div>
         </div>
     </div>

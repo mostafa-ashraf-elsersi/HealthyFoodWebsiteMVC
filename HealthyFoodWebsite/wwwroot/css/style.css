@@ -373,3 +373,55 @@
 .footer .copyright a:hover {
     color: var(--primary);
 }
+
+
+/* Website Logo Media Queries */
+
+@media only screen and (max-width: 424px) {
+    #website-logo {
+        width: 50%;
+        margin-left: 10px;
+    }
+}
+
+@media only screen and (min-width: 425px) and (max-width: 550px) {
+    #website-logo {
+        width: 40%;
+        margin-left: 10px;
+    }
+}
+
+@media only screen and (min-width: 551px) and (max-width: 767px) {
+    #website-logo {
+        width: 35%;
+        margin-left: 10px;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    #website-logo {
+        width: 30%;
+        margin-left: 10px;
+    }
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+    #website-logo {
+        width: 20%;
+        margin-left: 50px;
+    }
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {
+    #website-logo {
+        width: 20%;
+        margin-left: 50px;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    #website-logo {
+        width: 15%;
+        margin-left: 50px;
+    }
+}

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthyFoodWebsite.Migrations
 {
     /// <inheritdoc />
-    public partial class ConstructingDatabase : Migration
+    public partial class ConstructingTheDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,8 +18,8 @@ namespace HealthyFoodWebsite.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PosterUri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     AuthorType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PublishingDate = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDisplayed = table.Column<bool>(type: "bit", nullable: false)
@@ -51,8 +51,8 @@ namespace HealthyFoodWebsite.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Subject = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Subject = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,7 +67,7 @@ namespace HealthyFoodWebsite.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -109,7 +109,8 @@ namespace HealthyFoodWebsite.Migrations
                     StartedPreparing = table.Column<bool>(type: "bit", nullable: false),
                     StartedDelivering = table.Column<bool>(type: "bit", nullable: false),
                     LoggerId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    UserIsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    AdminIsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,10 +129,10 @@ namespace HealthyFoodWebsite.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RatingValue = table.Column<byte>(type: "tinyint", nullable: false),
-                    LoggerId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RatingValue = table.Column<byte>(type: "tinyint", nullable: true),
+                    SeenByAdmin = table.Column<bool>(type: "bit", nullable: false),
+                    LoggerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -156,8 +157,7 @@ namespace HealthyFoodWebsite.Migrations
                     SubTotalPrice = table.Column<float>(type: "real", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: true),
-                    LoggerId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    LoggerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -13,19 +13,19 @@ else if (ViewBag.MessageSent == 0)
 {
     <div id="message-sending-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
         <button type="button" class="btn-close" onclick="closeAlert()"></button>
-        <span style="color: white; text-align: justify;">An error occurred! Try again!</span>
+        <span style="color: white; text-align: justify;">Error occurred! Try again!</span>
     </div>
 }
 <!-- ContactUs Alert -->
 
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
-    <div class="container">
-        <h1 class="display-3 mb-3 animated slideInDown" style="color:darkblue">Contact Us</h1>
+    <div class="container d-none d-md-block">
+        <h1 class="display-3 mb-3 animated slideInDown">Contact Us</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetView">Home</a></li>
-                <li class="breadcrumb-item active" style="color:white" aria-current="page">Contact Us</li>
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Contact Us</li>
             </ol>
         </nav>
     </div>
@@ -36,7 +36,7 @@ else if (ViewBag.MessageSent == 0)
     <div class="container">
         <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
             <h1 class="display-5 mb-3">Contact Us</h1>
-            <p>Don't hesitate to start a connection with us</p>
+            <p>Don't Hesitate To Start A Connection With Us</p>
         </div>
         <div class="row g-5 justify-content-center">
             <div class="col-lg-5 col-md-12 wow fadeInUp" data-wow-delay="0.1s">
@@ -45,7 +45,7 @@ else if (ViewBag.MessageSent == 0)
                     <p class="mb-5"><i class="fa fa-phone-alt me-3"></i>01550012835</p>
                     <h5 class="text-white">Office Address</h5>
                     <p class="mb-5"><i class="fa fa-map-marker-alt me-3"></i>Gharbyia, Egypt</p>
-                    <h5 class="text-white">Follow Me</h5>
+                    <h5 class="text-white">Follow Us</h5>
                     <div class="d-flex pt-2">
                         <a class="btn btn-square btn-outline-light rounded-circle me-1" href="https://www.facebook.com/profile.php?id=100091729882218"><i class="fab fa-facebook-f"></i></a>
                         <a class="btn btn-square btn-outline-light rounded-circle me-0" href="https://www.linkedin.com/in/mostafa-ashraf-elsersi"><i class="fab fa-linkedin-in"></i></a>
@@ -118,8 +118,8 @@ else if (ViewBag.MessageSent == 0)
         });
 
         function closeAlert() {
-            let blogSubscriptionAlert = document.getElementById("message-sending-alert");
-            blogSubscriptionAlert.classList.add(["d-none"]);
+            let alertDiv = document.getElementById("message-sending-alert");
+            alertDiv.classList.add(["d-none"]);
         }
     </script>
 }

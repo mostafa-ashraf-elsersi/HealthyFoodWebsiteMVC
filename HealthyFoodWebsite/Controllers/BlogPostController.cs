@@ -20,12 +20,16 @@ namespace HealthyFoodWebsite.Controllers
 
         // Object Methods Zone
         [AllowAnonymous]
-        public async Task<IActionResult> GetPagesAsync(int pageIndex = 0)
+        public async Task<IActionResult> GetPagesAsync(int pageIndex = 0, int postUpdated = -1)
         {
             var pagesTuple = await blogRepository.GetPagesWithCountAsync(pageIndex);
 
             ViewBag.PagesCount = pagesTuple.Item2;
-            ViewBag.PostUpdated = 1;
+
+            if (postUpdated == 1)
+            {
+                ViewBag.PostUpdated = 1;
+            }
 
             return View("BlogGrid", pagesTuple.Item1);
         }
@@ -96,7 +100,7 @@ namespace HealthyFoodWebsite.Controllers
             {
                 if (await blogRepository.UpdateAsync(entity))
                 {
-                    return RedirectToActionPermanentPreserveMethod("GetPages", "BlogPost", new { PageIndex = 0 });
+                    return RedirectToActionPermanentPreserveMethod("GetPages", "BlogPost", new { PageIndex = 0, PostUpdated = 1 });
                 }
                 else
                 {

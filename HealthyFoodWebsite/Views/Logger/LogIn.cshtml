@@ -13,7 +13,7 @@ else if (ViewBag.PasswordChanged == 0)
 {
     <div id="password-changing-alert" class="alert alert-dismissible fixed-bottom bg-secondary" style="margin-left: 10px; max-width: 300px; z-index: 100;">
         <button type="button" class="btn-close" onclick="closePasswordChangingAlert()"></button>
-        <span style="color: white; text-align: justify;">Error! Try again!</span>
+        <span style="color: white; text-align: justify;">Error occurred! Try again!</span>
     </div>
 }
 <!-- Password-Changing Alert -->
@@ -30,26 +30,34 @@ else if (ViewBag.PasswordChanged == 0)
 
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
-    <div class="container">
-        <h1 class="display-3 mb-3 animated slideInDown" style="color:darkblue">Get Connected</h1>
+    <div class="container d-none d-md-block">
+        <h1 class="display-3 mb-3 animated slideInDown">Get Connected</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Home" asp-action="GetView">Home</a></li>
-                <li class="breadcrumb-item active" style="color:white" aria-current="page">Log In</li>
+                <li class="breadcrumb-item"><a class="text-body" asp-controller="Home" asp-action="GetView">Home</a></li>
+                <li class="breadcrumb-item text-dark active" aria-current="page">Log In</li>
             </ol>
         </nav>
     </div>
 </div>
 <!-- Page Header End -->
 <!-- Login Form Start -->
-<div class="container-fluid bg-light bg-icon py-6 mb-0">
+<div class="container-fluid bg-light bg-icon py-6">
     <div class="container">
         <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
             <div class="text-start">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title mb-5">Login Form</h5>
+                        <h5 class="card-title mt-2 mb-4">Login Form</h5>
                         <form asp-action="AuthenticateLogger">
+                            <div class="mb-3 text-center">
+                                <h5>LOG IN WITH DIFFERENT CREDENTIALS AS</h5>
+                            </div>
+                            <div class="d-flex justify-content-evenly mb-5">
+                                <button type="button" class="btn btn-primary" onclick="setCredentials('BusinessOwner')">Owner</button>
+                                <button type="button" class="btn btn-secondary" onclick="setCredentials('Admin')">Admin</button>
+                                <button type="button" class="btn btn-info text-white" onclick="setCredentials('User')">User</button>
+                            </div>
                             <div class="form-floating mb-5">
                                 <input asp-for=Username class="form-control" placeholder="">
                                 <label asp-for=Username>Username</label>
@@ -57,7 +65,7 @@ else if (ViewBag.PasswordChanged == 0)
                             <div class="form-floating mb-5 text-start">
                                 <input asp-for=Password class="form-control" placeholder="">
                                 <label asp-for=Password>Password</label>
-                                <a asp-action="PasswordForgettingIdentityConfirmationPortal">Forget Your Password?</a>
+                                <a asp-action="PasswordForgettingIdentityConfirmationPortal">Forgot Your Password?</a>
                             </div>
                             @if (!(ViewBag.PasswordChanged == 1 || ViewBag.PasswordChanged == 0))
                             {
@@ -79,13 +87,31 @@ else if (ViewBag.PasswordChanged == 0)
 @section Scripts {
     <script>
         function closePasswordChangingAlert() {
-            let blogSubscriptionAlert = document.getElementById("password-changing-alert");
-            blogSubscriptionAlert.classList.add(["d-none"]);
+            let alertDiv = document.getElementById("password-changing-alert");
+            alertDiv.classList.add(["d-none"]);
         }
 
         function closeRegistrationAlert() {
-            let blogSubscriptionAlert = document.getElementById("registration-alert");
-            blogSubscriptionAlert.classList.add(["d-none"]);
+            let alertDiv = document.getElementById("registration-alert");
+            alertDiv.classList.add(["d-none"]);
+        }
+
+        function setCredentials(role) {
+            let usernameField = document.getElementById("Username");
+            let passwordField = document.getElementById("Password");
+
+            if (role === "BusinessOwner") {
+                usernameField.value = "mostafa_ashraf";
+                passwordField.value = "123456";
+            }
+            else if (role === "Admin") {
+                usernameField.value = "mostafa_elsersi";
+                passwordField.value = "123456";
+            }
+            else if (role === "User") {
+                usernameField.value = "mostafa_mostafa";
+                passwordField.value = "123456";
+            }
         }
     </script>
 }

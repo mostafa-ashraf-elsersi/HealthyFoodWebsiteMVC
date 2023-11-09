@@ -39,7 +39,7 @@ else if (ViewBag.TestimonialAdded == 0)
 
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
-    <div class="container">
+    <div class="container d-none d-md-block">
         <h1 class="display-3 mb-3 animated slideInDown">My Testimonials</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
@@ -51,7 +51,7 @@ else if (ViewBag.TestimonialAdded == 0)
 </div>
 <!-- Page Header End -->
 <!-- Testimonial Start -->
-<div class="container-fluid bg-light bg-icon py-6 mb-0">
+<div class="container-fluid bg-light bg-icon py-6">
     <div class="container">
         <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 1000px;">
             <div>
@@ -118,8 +118,8 @@ else if (ViewBag.TestimonialAdded == 0)
     <script>
 
         function closeTestimonialAlert() {
-            let blogSubscriptionAlert = document.getElementById("testimonial-alert");
-            blogSubscriptionAlert.classList.add(["d-none"]);
+            let alertDiv = document.getElementById("testimonial-alert");
+            alertDiv.classList.add(["d-none"]);
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -150,6 +150,7 @@ else if (ViewBag.TestimonialAdded == 0)
                 error: (xhr, status, error) => { }
             });
         }
+
     </script>
 }
 

@@ -64,7 +64,7 @@
 
 <!-- Page Header Start -->
 <div class="container-fluid page-header wow fadeIn" data-wow-delay="0.1s">
-    <div class="container">
+    <div class="container d-none d-md-block">
         <h1 class="display-3 mb-3 animated slideInDown">Testimonial Addtion</h1>
         <nav aria-label="breadcrumb animated slideInDown">
             <ol class="breadcrumb mb-0">
@@ -128,8 +128,8 @@
 @section Scripts {
     <script>
         function closeTestimonialAlert() {
-            let blogSubscriptionAlert = document.getElementById("testimonial-alert");
-            blogSubscriptionAlert.classList.add(["d-none"]);
+            let alertDiv = document.getElementById("testimonial-alert");
+            alertDiv.classList.add(["d-none"]);
         }
     </script>
 }
