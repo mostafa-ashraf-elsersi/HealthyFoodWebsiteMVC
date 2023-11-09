@@ -57,7 +57,7 @@ else if (ViewBag.ProductAdded == 0)
                             <p class="fst-italic text-black-50" style="text-align:justify;">The image uploaded will be rendered inside the box below.</p>
                             @{
                                 string status = ViewBag.ConfigurationStatus;
-                                <div class="image-area mt-4 mb-3 text-start"><img id="imageResult" src="@(status == "Add" ? "#" : Model.ImageUri)" alt="" class="img-fluid"></div>
+                                <div class="image-area mt-4 mb-3 text-center"><img id="imageResult" src="@(status == "Add" ? "#" : Model.ImageUri)" alt="" class="img-fluid"></div>
                                 <input type="text" asp-for=ImageUri hidden/>
                             }
                         </div>
