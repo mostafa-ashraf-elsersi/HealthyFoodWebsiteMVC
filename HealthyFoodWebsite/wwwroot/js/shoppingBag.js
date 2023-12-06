@@ -143,11 +143,11 @@ function appendNewConstructedOrderInActiveOrdersGridToBeTracked(currentOrderId) 
                 <span class="fw-bold mx-2">ID-<span>${currentOrderId}</span></span>
 
                 <div class="progress d-inline me-1" style="width: 40%; height: 25px;" role="progressbar" aria-label="Animated striped progress bar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated fw-bold" style="width: 0%; height: 25px;"></div>
+                    <div class="progress-bar progress-bar-striped progress-bar-animated fw-bold" style="width: 0%; height: 25px; color: black;"></div>
                 </div>
 
                 <div class="progress d-inline ms-2 me-1" style="width: 40%; height: 25px;" role="progressbar" aria-label="Animated striped progress bar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info fw-bold" style="width: 0%; height: 25px;"></div>
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info fw-bold" style="width: 0%; height: 25px; color: black;"></div>
                 </div>
 
             </div>

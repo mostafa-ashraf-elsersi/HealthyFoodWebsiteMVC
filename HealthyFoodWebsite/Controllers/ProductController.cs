@@ -22,14 +22,9 @@ namespace HealthyFoodWebsite.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllAsync(int productInsertionResult = -1)
         {
-            if (User.Identity?.IsAuthenticated == true && productInsertionResult >= 0)
+            if (productInsertionResult >= 0)
             {
                 ViewBag.ProcessSuccessful = productInsertionResult;
-            }
-
-            if (productInsertionResult == -1)
-            {
-                ViewBag.ProcessSuccessful = -1;
             }
 
             return View("Product", await productRepository.GetAllAsync());

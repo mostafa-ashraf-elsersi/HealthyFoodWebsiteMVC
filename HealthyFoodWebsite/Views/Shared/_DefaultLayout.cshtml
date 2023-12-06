@@ -135,7 +135,7 @@
                          @if (User.IsInRole("User"))
                         {
                             <!-- Shopping Bag Link-->
-                            <a class="nav-item btn-sm-square border border-dark bg-white me-3" style="margin-top:16px; width:40px; height:40px; border-radius:40px" asp-controller="ShoppingBag" asp-action="GetUserActiveShoppingBagItems">
+                            <a class="nav-item btn-sm-square border border-dark bg-white ms-lg-2 me-1" style="margin-top:16px; width:40px; height:40px; border-radius:40px" asp-controller="ShoppingBag" asp-action="GetUserActiveShoppingBagItems">
                                 <span class="fa fa-shopping-bag text-body"></span>
                             </a>
                         }
@@ -190,7 +190,7 @@
             <div class="container py-5">
                 <div class="row">
                     <div class="col-12 mb-4 col-md-6 col-lg-3 mb-lg-0">
-                        <img src="~/img/logo.png" alt="website-logo" class="mb-2" style="width: 100%;"/>
+                        <img src="~/img/logo-2.png" alt="website-logo" class="mb-2" style="width: 100%;"/>
                         <p style="text-align:justify">Get fresh organic fruits and vegetables with affordable prices!</p>
                         <div class="d-flex pt-2">
                             <a class="btn btn-square btn-outline-light rounded-circle me-1" href="https://www.facebook.com/profile.php?id=100091729882218" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -273,7 +273,8 @@
         }
 
         async function InsertBlogSubscriber() {
-            let emailAddress = document.getElementById("blog-subscription-email-field").value;
+            let blogSubscriptionEmailField = document.getElementById("blog-subscription-email-field");
+            let emailAddress = blogSubscriptionEmailField.value;
 
             $.support.cors = true;
             await $.ajax({
@@ -286,6 +287,7 @@
                     if (result == true) {
                         blogSubscriptionAlert.lastElementChild.textContent = `Successful blog subscription!`;
                         blogSubscriptionAlert.classList.remove(["d-none"]);
+                        blogSubscriptionEmailField.value = "";
                     }
                     else {
                         blogSubscriptionAlert.classList.remove(["bg-primary"]);

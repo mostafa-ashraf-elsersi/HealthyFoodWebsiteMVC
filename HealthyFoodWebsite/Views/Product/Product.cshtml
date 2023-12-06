@@ -237,38 +237,59 @@ else if (ViewBag.ProcessSuccessful == 0)
                                         </div>
                                         <div class="text-center p-4">
                                             <p class="d-block h5 mb-2">${product.name}</p>
-                                            <span class="text-primary me-1">EGP ${product.price} / Kg</span>
+                                            <span class="text-primary me-1">EGP ${product.price} EGP/Kg</span>
                                         </div>
-                                        <div class="d-flex flex-column border-top">
-                                            <div class="form-check form-switch my-2 mx-2">
-                                                <input class="form-check-input" type="checkbox" role="checkbox" id="deactivationSwitch" ${product.isDisplayed == true ? "checked" : ""} onclick="deactivateAsync(${product.id})">
-                                                <label class="form-check-label" for="deactivationSwitch">Show / Hide</label>
+
+                                        @if (User.IsInRole("BusinessOwner"))
+                                        {
+                                            <div class="d-flex flex-column border-top">
+                                                <div class="form-check form-switch my-2 mx-2">
+                                                    <input class="form-check-input" type="checkbox" role="checkbox" id="deactivationSwitch" ${product.isDisplayed == true ? "checked" : ""} onclick="deactivateAsync(${product.id})">
+                                                    <label class="form-check-label" for="deactivationSwitch">Show / Hide</label>
+                                                </div>
+                                                <a class="btn btn-primary mb-2 mx-2" href="Update/${product.id}">Update</a>
+                                                <!-- Button trigger modal -->
+                                                <button class="btn btn-danger mb-2 mx-2" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop-${product.id}">Delete</button>
                                             </div>
-                                            <a class="btn btn-primary mb-2 mx-2" href="Update/${product.id}">Update</a>
-                                            <!-- Button trigger modal -->
-                                            <button class="btn btn-danger mb-2 mx-2" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop-${product.id}">Delete</button>
-                                        </div>
+                                        }
+
+                                        @if (!(User.IsInRole("BusinessOwner") || User.IsInRole("Admin")))
+                                        {
+                                            <div class="text-center border-top py-2 mt-2">
+                                                <span class="w-50" ${product.isDisplayed == true ? "" : "hidden"}>
+                                                    <a class="text-body" asp-controller="ShoppingBag" asp-action="InsertUsingProduct" asp-route-productId="${product.id}"><i class="fa fa-shopping-bag text-primary me-2"></i>Add to bag</a>
+                                                </span>
+
+                                                <span class="w-50" ${product.isDisplayed == true ? "hidden" : ""}>
+                                                    SOLD OUT!
+                                                </span>
+                                            </div>
+                                        }
+                                       
                                     </div>
                                 </div>
 
-                                <!-- Modal -->
+                                @if (User.IsInRole("BusinessOwner"))
+                                {
+                                    <!-- Modal -->
                                     <div class="modal fade" id="staticBackdrop-${product.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Deletion!</h1>
-                                            </div>
-                                            <div class="modal-body">
-                                                Are you sure you want to delete this <strong>${product.name}</strong> product?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary" onclick="deleteAsync(${product.id})" data-bs-dismiss="modal">Yes, I meant it</button>
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Deletion!</h1>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete this <strong>${product.name}</strong> product?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-primary" onclick="deleteAsync(${product.id})" data-bs-dismiss="modal">Yes, I meant it</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                        `;
+                                }
+                            `;
 
                         productsContainer.insertAdjacentHTML("beforeend", productHtmlCode);
 

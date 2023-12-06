@@ -16,8 +16,7 @@ connection.on("SendOrderAsync", function (currentOrder) {
     cardWrapper.id = `order-card-${currentOrder.orderId}`
     cardWrapper.classList.add(["card"]);
     cardWrapper.classList.add(["text-start"]);
-    cardWrapper.classList.add(["mb-3"]);
-    cardWrapper.style.width = "40%";
+    cardWrapper.classList.add(["mb-4"]);
 
     const cardBody = document.createElement("div");
     cardBody.classList.add(["card-body"]);
@@ -83,17 +82,19 @@ connection.on("SendOrderAsync", function (currentOrder) {
             <div class="fw-bold text-decoration-underline">Order Details</div>
         </div>
 
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th scope="col">Product Name</th>
-                    <th scope="col">Unit Price (EGP)</th>
-                    <th scope="col">Quantity (Kg)</th>
-                    <th scope="col">Sub-Total (EGP)</th>
-                </tr>
-            </thead>
-            <tbody id="productsTableBody-${currentOrder.orderId}"></tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Unit Price (EGP)</th>
+                        <th scope="col">Quantity (Kg)</th>
+                        <th scope="col">Sub-Total (EGP)</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody-${currentOrder.orderId}"></tbody>
+            </table>
+        </div>
 
         <div class="d-flex justify-content-evenly">
             <!-- Done button trigger modal -->

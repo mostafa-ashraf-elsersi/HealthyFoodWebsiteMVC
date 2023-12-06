@@ -30,7 +30,7 @@
             <div class="text-start">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title mt-4 mb-5">Registration Form</h5>
+                        <h5 class="card-title mt-3 mb-4">Registration Form</h5>
                         <form asp-action="Insert" method="post">
                             <div class="form-floating mb-4">
                                 <input asp-for=FullName class="form-control" placeholder="">
@@ -77,7 +77,7 @@
                                     <span asp-validation-for="Role" class="text-danger"></span>
                                 </div>
                             }
-                            <div class="d-flex justify-content-evenly">
+                            <div class="d-flex justify-content-evenly mb-3">
                                 <button type="submit" class="btn btn-primary">Register</button>
                                 <button type="reset" class="btn btn-secondary">Cancel</button>
                             </div>

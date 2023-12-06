@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthyFoodWebsite.Migrations
 {
     [DbContext(typeof(HealthyFoodDbContext))]
-    [Migration("20231109045807_Constructing-The-Database")]
-    partial class ConstructingTheDatabase
+    [Migration("20231206140138_Constructing-Database-Initially")]
+    partial class ConstructingDatabaseInitially
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

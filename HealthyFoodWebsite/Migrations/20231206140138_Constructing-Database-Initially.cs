@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthyFoodWebsite.Migrations
 {
     /// <inheritdoc />
-    public partial class ConstructingTheDatabase : Migration
+    public partial class ConstructingDatabaseInitially : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
