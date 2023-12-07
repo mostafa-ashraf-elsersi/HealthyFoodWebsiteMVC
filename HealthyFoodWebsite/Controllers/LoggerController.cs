@@ -41,8 +41,13 @@ namespace HealthyFoodWebsite.Controllers
 
         // LOGIN/LOGOUT ZONE
         [AllowAnonymous]
-        public IActionResult LogIn()
+        public IActionResult LogIn(int accountRegistered = -1)
         {
+            if (accountRegistered == 1)
+            {
+                ViewBag.AccountRegistered = accountRegistered;
+            }
+
             ViewBag.PasswordChanged = -1;
             return View();
         }
@@ -123,7 +128,7 @@ namespace HealthyFoodWebsite.Controllers
                 if (await loggerRepository.InsertAsync(entity))
                 {
                     ViewBag.AccountRegistered = 1;
-                    return View("LogIn");
+                    return RedirectToActionPermanent("LogIn", new { ViewBag.AccountRegistered });
                 }
             }
 

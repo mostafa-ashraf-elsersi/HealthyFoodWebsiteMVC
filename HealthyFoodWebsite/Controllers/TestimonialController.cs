@@ -25,8 +25,13 @@ namespace HealthyFoodWebsite.Controllers
         }
 
         [Authorize(Roles = "User")]
-        public async Task<IActionResult> GetUserTestimonialsAsync()
+        public async Task<IActionResult> GetUserTestimonialsAsync(int testimonialAdded = -1)
         {
+            if (testimonialAdded != -1)
+            {
+                ViewBag.TestimonialAdded = testimonialAdded;
+            }
+
             return View("UserTestimonial", await testimonialRepository.GetUserTestimonialsAsync());
         }
 
@@ -82,7 +87,7 @@ namespace HealthyFoodWebsite.Controllers
                 ViewBag.TestimonialAdded = 0;
             }
 
-            return View("UserTestimonial", await testimonialRepository.GetUserTestimonialsAsync());
+            return RedirectToActionPermanent("GetUserTestimonials", new { ViewBag.TestimonialAdded });
         }
 
 

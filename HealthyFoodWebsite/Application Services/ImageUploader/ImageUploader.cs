@@ -15,18 +15,24 @@
         public async Task<string> UploadImageToServerAsync(IFormFile imageFile, string containingfolderRelativePath)
         {
             string wwwRootPath = webHostEnvironment.WebRootPath;
+
             string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
             string fileExtension = Path.GetExtension(imageFile.FileName);
             string newFileName = $"{fileName}-{DateTime.Now:ffffff-ss-mm-dd-MM-yyyy}{fileExtension}";
-            string fileAbsolutePath = Path.Combine($"{wwwRootPath}{containingfolderRelativePath}", newFileName);
 
-            string[] relativePathSegments = containingfolderRelativePath.Split("\\", StringSplitOptions.None);
-            string fileRelativePath = $"/{relativePathSegments[1]}/{relativePathSegments[2]}/{newFileName}";
-
-            using(var fileStream = new FileStream(fileAbsolutePath, FileMode.Create))
+            string fileDirectory = $"{wwwRootPath}{containingfolderRelativePath}";
+            if (!Directory.Exists(fileDirectory))
+            {
+                Directory.CreateDirectory(fileDirectory);
+            }
+            string fileAbsolutePath = Path.Combine(fileDirectory, newFileName);
+            using (var fileStream = new FileStream(fileAbsolutePath, FileMode.Create))
             {
                 await imageFile.CopyToAsync(fileStream);
             }
+
+            string[] relativePathSegments = containingfolderRelativePath.Split("\\", StringSplitOptions.None);
+            string fileRelativePath = $"/{relativePathSegments[1]}/{relativePathSegments[2]}/{newFileName}";
 
             return fileRelativePath;
         }
