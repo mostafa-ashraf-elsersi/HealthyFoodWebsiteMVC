@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Net.Mail;
 using System.Net;
 using HealthyFoodWebsite.Repositories.ContactUsRepository;
+using Microsoft.AspNetCore.Builder;
+using System;
+using HealthyFoodWebsite.Application_Services.MigrationsApplier;
 
 namespace HealthyFoodWebsite
 {
@@ -95,6 +98,8 @@ namespace HealthyFoodWebsite
                 pattern: "{controller=Home}/{action=GetView}/{id?}");
 
             app.MapHub<OrderHub>("/order-hub");
+
+            app.ApplyMigrationsIfNot();
 
             app.Run();
         }
